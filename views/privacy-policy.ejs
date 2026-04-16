@@ -1,67 +1,222 @@
-
-<%- include("partials/header") %><!DOCTYPE html>
+<%- include("partials/header") %>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Privacy Policy | Anifusionstream</title>
-  <link rel="stylesheet" href="/css/privacy.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | AniFusionStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0b0e11;      /* Deepest background */
+            --navy-card: #151b23;    /* Main card color */
+            --navy-inner: #1c232d;   /* Sub-boxes and list items */
+            --primary-blue: #3b82f6;  /* Electric blue accent */
+            --text-main: #ffffff;
+            --text-dim: #9ca3af;
+        }
+
+        body { 
+            background-color: var(--bg-deep); 
+            color: var(--text-main); 
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 4rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* The main rounded Obsidian container */
+        .obsidian-card {
+            background-color: var(--navy-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 2.5rem;
+            padding: 3rem;
+            width: 100%;
+            margin-bottom: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Section header with the blue vertical pill */
+        .pill-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pill-header::before {
+            content: "";
+            width: 5px;
+            height: 24px;
+            background-color: var(--primary-blue);
+            border-radius: 99px;
+            display: block;
+        }
+
+        /* Sub-boxes (Consent and List items) */
+        .inner-box {
+            background-color: var(--navy-inner);
+            padding: 1.75rem;
+            border-radius: 1.25rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .inner-box p {
+            color: var(--text-dim);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* Checkmark list items */
+        .check-item {
+            background-color: var(--navy-inner);
+            padding: 1.25rem 1.5rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .check-icon {
+            color: var(--primary-blue);
+            flex-shrink: 0;
+        }
+
+        .check-text {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Footer Action Button */
+        .btn-blue {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 1.15rem;
+            border-radius: 1rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            text-decoration: none;
+            margin-top: 1.5rem;
+        }
+
+        .btn-blue:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .secondary-text {
+            color: var(--text-dim);
+            line-height: 1.7;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .obsidian-card { padding: 2rem 1.5rem; border-radius: 2rem; }
+            .pill-header { font-size: 1.25rem; }
+            .text-5xl { font-size: 2.75rem !important; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="glow-text">Privacy Policy</h1>
-    <p class="intro fade-in">At <strong>Anifusionstream</strong>, your privacy is one of our top priorities.</p>
 
-    <section class="fade-in">
-      <h2>Consent</h2>
-      <p>By using our website, you hereby consent to our Privacy Policy and agree to its terms.</p>
-    </section>
+    <div class="page-container">
+        
+        <div class="text-center mb-12">
+            <h1 class="text-6xl font-black tracking-tighter mb-4">
+                Privacy <span class="text-blue-500">Policy</span>
+            </h1>
+            <p class="text-gray-500 text-xl font-medium">
+                At <span class="text-white">AniFusionStream</span>, your privacy is one of our top priorities.
+            </p>
+        </div>
 
-    <section class="fade-in">
-      <h2>Information We Collect</h2>
-      <p>We collect your name, email, and other personal data when you register or contact us.</p>
-    </section>
+        <div class="obsidian-card">
+            
+            <div class="pill-header">Consent</div>
+            <div class="inner-box">
+                <p>By using our website, you hereby consent to our Privacy Policy and agree to its terms.</p>
+            </div>
 
-    <section class="fade-in">
-      <h2>How We Use Your Information</h2>
-      <ul>
-        <li>To improve and personalize your experience</li>
-        <li>To communicate with you</li>
-        <li>To prevent fraud</li>
-        <li>To analyze usage and improve the website</li>
-      </ul>
-    </section>
+            <div class="pill-header">Information We Collect</div>
+            <p class="secondary-text">
+                We collect your name, email, and other personal data when you register an account, post a comment, or contact us directly. This information is kept secure and is never sold to third parties.
+            </p>
 
-    <!-- <section class="fade-in">
-      <h2>Log Files</h2>
-      <p>We log IP addresses, browser type, date/time stamps, and pages visited for analytics purposes.</p>
-    </section> -->
+            <div class="pill-header">How We Use Your Information</div>
+            
+            <div class="check-item">
+                <svg class="check-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                <span class="check-text">To improve and personalize your experience</span>
+            </div>
 
-    <section class="fade-in">
-      <h2>Cookies & Web Beacons</h2>
-      <p>We use cookies to store preferences and optimize your user experience.</p>
-    </section>
+            <div class="check-item">
+                <svg class="check-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                <span class="check-text">To communicate with you directly</span>
+            </div>
 
-    <!-- <section class="fade-in">
-      <h2>Advertising Partners</h2>
-      <p>Third-party advertisers may use cookies and web beacons to display personalized ads.</p>
-    </section> -->
+            <div class="check-item">
+                <svg class="check-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                <span class="check-text">To prevent fraud and secure the platform</span>
+            </div>
 
-    <section class="fade-in">
-      <h2>Your Data Protection Rights</h2>
-      <p>Under GDPR/CCPA, you have rights to access, correct, erase, restrict or object to our use of your data.</p>
-    </section>
+            <div class="check-item">
+                <svg class="check-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                <span class="check-text">To analyze usage and improve the website</span>
+            </div>
 
-    <section class="fade-in">
-      <h2>Children’s Privacy</h2>
-      <p>We do not knowingly collect any personal data from children under 13.</p>
-    </section>
+            <div class="mt-8"></div>
 
-    <section class="fade-in">
-      <h2>Contact Us</h2>
-      <p>For privacy concerns, contact us at <a href="mailto:anifusionstream@gmail.com">anifusionstream@gmail.com</a>.</p>
-    </section>
-  </div>
+            <div class="pill-header">Cookies & Web Beacons</div>
+            <p class="secondary-text">
+                We use cookies to store your preferences, keep you logged into your account securely, and optimize your user experience based on your browser type or other information.
+            </p>
+
+            <div class="pill-header">Your Data Protection Rights</div>
+            <p class="secondary-text">
+                Under GDPR and CCPA, you have the right to access, correct, erase, restrict, or object to our use of your personal data. If you would like to exercise any of these rights, please contact us.
+            </p>
+
+            <div class="pill-header">Children's Privacy</div>
+            <p class="secondary-text mb-0">
+                We do not knowingly collect any personal identifiable information from children under the age of 13. If you think that your child provided this kind of information on our website, we strongly encourage you to contact us immediately and we will promptly remove such information.
+            </p>
+        </div>
+
+        <div class="obsidian-card text-center">
+            <h2 class="text-2xl font-bold mb-4">Privacy Concerns?</h2>
+            <p class="text-gray-400 leading-relaxed px-4">
+                If you have any questions, concerns, or requests regarding your personal data and privacy, please don't hesitate to reach out to our team.
+            </p>
+
+            <a href="/contact-us" class="btn-blue">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7 8.941L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                Contact Us
+            </a>
+        </div>
+
+    </div>
+
 </body>
 </html>
 <%- include('partials/footer') %>

@@ -1,26 +1,178 @@
 <%- include('partials/header') %>
-<div class="container mx-auto p-4 max-w-md">
-  <h1 class="text-2xl font-bold mb-4">Edit Anime</h1>
-  <form action="/admin/edit-anime/<%= anime._id %>" method="POST">
-    <div class="mb-4">
-      <label class="block mb-1">Name</label>
-      <input type="text" name="name" value="<%= anime.name %>" class="w-full p-2 rounded bg-gray-700 text-white" required>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Anime | AniFusionStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0b0e11;
+            --card-navy: #151b23;
+            --input-dark: #1c232d;
+            --primary-blue: #3b82f6;
+            --text-muted: #9ca3af;
+        }
+
+        body { 
+            background-color: var(--bg-deep); 
+            color: #ffffff; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        .admin-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            width: 100%;
+            padding: 2rem 1.25rem;
+        }
+
+        .ui-card {
+            background-color: var(--card-navy);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
+            width: 100%;
+            max-width: 650px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .ui-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .ui-input {
+            background-color: var(--input-dark);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.85rem;
+            color: #ffffff;
+            padding: 1.1rem;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .ui-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 1px var(--primary-blue);
+        }
+
+        .genre-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            background: rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            border-radius: 1.25rem;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .genre-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .genre-item:hover { color: #fff; }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: var(--primary-blue);
+            width: 18px;
+            height: 18px;
+        }
+
+        .ui-button {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 1.15rem;
+            border-radius: 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .ui-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .back-link {
+            color: var(--primary-blue);
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <div class="text-center mb-10">
+            <a href="/admin/dashboard" class="back-link">← BACK TO DASHBOARD</a>
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight">
+                Update <span class="text-blue-500">Anime</span>
+            </h1>
+            <p class="text-gray-500 mt-2">Editing Metadata for: <span class="text-white font-bold"><%= anime.name %></span></p>
+        </div>
+
+        <div class="ui-card">
+            <form action="/admin/edit-anime/<%= anime._id %>" method="POST">
+                
+                <div class="mb-8">
+                    <label class="ui-label">Anime Title</label>
+                    <input type="text" name="name" value="<%= anime.name %>" class="ui-input" required>
+                </div>
+
+                <div class="mb-8">
+                    <label class="ui-label">Cover Image URL</label>
+                    <input type="text" name="imageUrl" value="<%= anime.imageUrl %>" class="ui-input" required>
+                </div>
+
+                <div class="mb-8">
+                    <label class="ui-label">Synopsis / Description</label>
+                    <textarea name="description" rows="5" class="ui-input" required><%= anime.description %></textarea>
+                </div>
+
+                <div class="mb-10">
+                    <label class="ui-label">Categories / Genres</label>
+                    <div class="genre-grid">
+                        <% genres.forEach(genre => { %>
+                            <label class="genre-item">
+                                <input type="checkbox" name="genres" value="<%= genre._id %>" 
+                                    <%= anime.genres.some(g => g._id.toString() === genre._id.toString()) ? 'checked' : '' %>> 
+                                <%= genre.name %>
+                            </label>
+                        <% }) %>
+                    </div>
+                </div>
+
+                <button type="submit" class="ui-button">
+                    Save Changes
+                </button>
+            </form>
+        </div>
     </div>
-    <div class="mb-4">
-      <label class="block mb-1">Image URL</label>
-      <input type="text" name="imageUrl" value="<%= anime.imageUrl %>" class="w-full p-2 rounded bg-gray-700 text-white" required>
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1">Description</label>
-      <textarea name="description" class="w-full p-2 rounded bg-gray-700 text-white" required><%= anime.description %></textarea>
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1">Genres</label>
-      <% genres.forEach(genre => { %>
-        <label class="block"><input type="checkbox" name="genres" value="<%= genre._id %>" <%= anime.genres.some(g => g._id.toString() === genre._id.toString()) ? 'checked' : '' %>> <%= genre.name %></label>
-      <% }) %>
-    </div>
-    <button type="submit" class="bg-blue-500 p-2 rounded w-full">Update Anime</button>
-  </form>
-</div>
+
+</body>
+</html>
 <%- include('partials/footer') %>

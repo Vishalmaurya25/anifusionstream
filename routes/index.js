@@ -5,98 +5,112 @@ const Genre = require('../models/Genre');
 const Episode = require('../models/Episode');
 const { ensureAuthenticatedUser } = require('../middleware/auth');
 
-// Home Route
+/**
+ * GET /
+ * Home Route - Displays Animes, Genres, and Latest Episodes
+ * Supports Search and Genre Filtering
+ */
 router.get('/', ensureAuthenticatedUser, async (req, res) => {
-  try {
+    // 1. Initialize Query Parameters & State
     const searchQuery = req.query.q || '';
     const selectedGenre = req.query.genre || '';
+    const renderData = {
+        session: req.session,
+        messages: req.flash(),
+        searchQuery,
+        selectedGenre,
+        animes: [],
+        genres: [],
+        latestEpisodes: [],
+        isSearchResult: !!(searchQuery || selectedGenre)
+    };
 
-    // Fetch all genres
-    const genres = await Genre.find();
+    try {
+        // 2. Parallel Data Fetching (Genres)
+        const genres = await Genre.find().lean();
 
-    // Build the query for animes
-    let animeQuery = {};
+        // 3. Exact Match Search Logic
+        if (searchQuery) {
+            const exactMatch = await Anime.findOne({ 
+                name: new RegExp(`^${searchQuery}$`, 'i') 
+            }).populate('genres');
 
-    // If there's a search query, try to find an exact match
-    if (searchQuery) {
-      const anime = await Anime.findOne({ name: new RegExp('^' + searchQuery + '$', 'i') }).populate('genres');
-      if (anime) {
-        return res.redirect(`/anime/${anime._id}`);
-      }
-      animeQuery.name = { $regex: searchQuery, $options: 'i' };
-    }
+            if (exactMatch) {
+                return res.redirect(`/anime/${exactMatch._id}`);
+            }
+        }
 
-    // Filter by genre if selected
-    if (selectedGenre) {
-      animeQuery.genres = selectedGenre;
-    }
+        // 4. Build Dynamic Anime Query
+        const animeQuery = {};
+        if (searchQuery) {
+            animeQuery.name = { $regex: searchQuery, $options: 'i' };
+        }
+        if (selectedGenre) {
+            animeQuery.genres = selectedGenre;
+        }
 
-    // Fetch animes with the applied filters
-    let animes = await Anime.find(animeQuery)
-      .populate('genres')
-      .populate({
-        path: 'seasons.episodes',
-        model: 'Episode'
-      });
-
-    // Fetch 25 latest episodes from all anime (like anime-details.ejs)
-    let allEpisodes = [];
-    animes.forEach(anime => {
-      anime.seasons.forEach(season => {
-        (season.episodes || []).forEach(episode => {
-          if (episode) {
-            allEpisodes.push({
-              ...episode._doc,
-              anime: anime,
-              seasonNumber: season.seasonNumber
+        // 5. Fetch Animes with Populated Metadata
+        const animes = await Anime.find(animeQuery)
+            .populate('genres')
+            .populate({
+                path: 'seasons.episodes',
+                model: 'Episode'
             });
-          }
+
+        // 6. Modern Episode Extraction (Optimized for Premium UI)
+        // Flattens seasons and episodes into a single "Latest" feed
+        const allEpisodes = animes.flatMap(anime => 
+            (anime.seasons || []).flatMap(season => 
+                (season.episodes || [])
+                    .filter(ep => ep) // Filter out nulls
+                    .map(episode => ({
+                        ...episode._doc,
+                        anime: anime,
+                        seasonNumber: season.seasonNumber
+                    }))
+            )
+        );
+
+        // Sort by date descending and take top 9
+        const latestEpisodes = allEpisodes
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 9);
+
+        // 7. Genre Reordering (Active Genre First)
+        let sortedGenres = [...genres];
+        if (selectedGenre) {
+            const index = sortedGenres.findIndex(g => g._id.toString() === selectedGenre);
+            if (index !== -1) {
+                const [selected] = sortedGenres.splice(index, 1);
+                sortedGenres.unshift(selected);
+            }
+        }
+
+        // 8. Final Render Execution
+        res.render('index', {
+            ...renderData,
+            animes,
+            genres: sortedGenres,
+            latestEpisodes
         });
-      });
-    });
-    allEpisodes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    const latestEpisodes = allEpisodes.slice(0, 25);
 
-    // Reorder genres: selected genre at the top
-    let sortedGenres = [...genres];
-    if (selectedGenre) {
-      const selectedGenreIndex = sortedGenres.findIndex(g => g._id.toString() === selectedGenre);
-      if (selectedGenreIndex !== -1) {
-        const [selected] = sortedGenres.splice(selectedGenreIndex, 1);
-        sortedGenres.unshift(selected);
-      }
+    } catch (err) {
+        console.error('Home Route Error:', err);
+        req.flash('error', 'An error occurred while loading the homepage');
+        
+        // Return fallback state to prevent frontend crashes
+        res.render('index', renderData);
     }
-
-    res.render('index', {
-      animes,
-      genres: sortedGenres,
-      searchQuery,
-      selectedGenre,
-      session: req.session,
-      messages: req.flash(),
-      isSearchResult: !!searchQuery || !!selectedGenre,
-      latestEpisodes
-    });
-  } catch (err) {
-    console.error(err);
-    req.flash('error', 'An error occurred while loading the homepage');
-    res.render('index', {
-      animes: [],
-      genres: [],
-      searchQuery: req.query.q || '',
-      selectedGenre: req.query.genre || '',
-      session: req.session,
-      messages: req.flash(),
-      isSearchResult: false,
-      latestEpisodes: []
-    });
-  }
 });
 
-// Search Route (Redirects to root with query params)
-router.get('/search', ensureAuthenticatedUser, async (req, res) => {
-  const { q, genre } = req.query;
-  res.redirect(`/?q=${encodeURIComponent(q || '')}&genre=${encodeURIComponent(genre || '')}`);
+/**
+ * GET /search
+ * Search Redirect logic - Maintains compatibility with existing forms
+ */
+router.get('/search', ensureAuthenticatedUser, (req, res) => {
+    const { q = '', genre = '' } = req.query;
+    const params = new URLSearchParams({ q, genre });
+    res.redirect(`/?${params.toString()}`);
 });
 
 module.exports = router;

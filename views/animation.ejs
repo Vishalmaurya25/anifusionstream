@@ -1,49 +1,132 @@
 <style>
+  /* Functional wrapper only - no styling */
   .carousel-wrapper {
     overflow: hidden;
     width: 100%;
+    position: relative;
   }
 
   .carousel-track {
     display: flex;
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    align-items: center;
+    padding: 2rem 0; /* Minimal padding for hover lift */
   }
 
   .carousel-item {
-    min-width: 180px;
-    margin: 0 0.75rem;
+    min-width: 150px; 
+    margin: 0 1rem;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  /* THE ARCH CARD - Floating directly on your site bg */
+  .arch-glass-card {
+    position: relative;
+    width: 140px;
+    height: 190px;
+    border-radius: 70px 70px 15px 15px;
+    overflow: hidden;
+    
+    /* Minimalist Glass Logic */
+    background: rgba(255, 255, 255, 0.02); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .arch-glass-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    transition: all 0.5s ease;
+  }
+
+  /* Floating Title Pill */
+  .pill-glass-title {
+    background: rgba(15, 20, 28, 0.9);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    margin-top: -15px; /* Pulls title up into the card space */
+    z-index: 5;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  /* Hover States */
+  .carousel-item:hover .arch-glass-card {
+    transform: translateY(-10px);
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .carousel-item:hover .arch-glass-card img {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  .carousel-item:hover .pill-glass-title {
+    background: #3b82f6;
+    border-color: #60a5fa;
+    transform: scale(1.05);
+  }
+
+  /* Subtle Bottom Glow */
+  .glass-glow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(to top, var(--glow-color), transparent);
+    opacity: 0.3;
+    z-index: 1;
+    transition: opacity 0.4s ease;
+  }
+
+  .carousel-item:hover .glass-glow {
+    opacity: 0.6;
   }
 </style>
 
-<div class="carousel-wrapper py-10 relative bg-black">
-  <div id="carouselTrack" class="carousel-track px-4">
-    <% const items = [
-      { name: "Solo Leveling", color: "bg-cyan-400", img: "/images/Solo Leveling.png" },
-      { name: "NARUTO", color: "bg-orange-400", img: "/images/naruto.png" },
-      { name: "POKEMON", color: "bg-blue-400", img: "/images/pokemon.png" },
-      { name: "Jujutsu Kaisen", color: "bg-orange-500", img: "/images/jujutsu kaisen.png" },
-      { name: "Demon Slayer", color: "bg-cyan-400", img: "/images/Demon Slayer.png" },
-      { name: "Dragon ball", color: "bg-green-500", img: "/images/Dragon ball.png" },
-      { name: "Teogonia", color: "bg-cyan-400", img: "/images/Teogonia.png" },
-    ]; %>
+<div class="carousel-wrapper">
+  <div id="carouselTrack" class="carousel-track">
+    <% 
+    const items = [
+      { name: "Teogonia", glow: "rgba(59, 130, 246, 0.5)", img: "/images/Teogonia.png" },
+      { name: "Solo Leveling", glow: "rgba(34, 211, 238, 0.5)", img: "/images/Solo Leveling.png" },
+      { name: "NARUTO", glow: "rgba(249, 115, 22, 0.5)", img: "/images/naruto.png" },
+      { name: "POKEMON", glow: "rgba(59, 130, 246, 0.5)", img: "/images/pokemon.png" },
+      { name: "Jujutsu Kaisen", glow: "rgba(249, 115, 22, 0.5)", img: "/images/jujutsu kaisen.png" },
+      { name: "Demon Slayer", glow: "rgba(34, 211, 238, 0.5)", img: "/images/Demon Slayer.png" },
+      { name: "Dragon ball", glow: "rgba(34, 197, 94, 0.5)", img: "/images/Dragon ball.png" },
+    ]; 
+    %>
 
-    <% items.forEach(item => { %>
-      <div class="carousel-item flex flex-col items-center">
-        <div class="<%= item.color %> rounded-t-full rounded-b-none w-28 h-32 flex justify-center items-center overflow-hidden">
-          <img src="<%= item.img %>" alt="<%= item.name %>" class="h-30 object-contain" />
+    <% [...items, ...items].forEach(item => { %>
+      <div class="carousel-item">
+        <div class="arch-glass-card" style="--glow-color: <%= item.glow %>;">
+          <img src="<%= item.img %>" alt="<%= item.name %>" />
+          <div class="glass-glow"></div>
         </div>
-        <div class="bg-black w-28 text-center font-bold mt-[-4px] text-white"><%= item.name %></div>
-      </div>
-    <% }) %>
-
-    <!-- Clone first few items for seamless looping -->
-    <% items.slice(0, 3).forEach(item => { %>
-      <div class="carousel-item flex flex-col items-center">
-        <div class="<%= item.color %> rounded-t-full rounded-b-none w-28 h-32 flex justify-center items-center overflow-hidden">
-          <img src="<%= item.img %>" alt="<%= item.name %>" class="h-30 object-contain" />
-        </div>
-        <div class="bg-black w-28 text-center font-bold mt-[-4px] text-white"><%= item.name %></div>
+        <div class="pill-glass-title"><%= item.name %></div>
       </div>
     <% }) %>
   </div>
@@ -51,23 +134,17 @@
 
 <script>
   const track = document.getElementById("carouselTrack");
-  const interval = 2500; // 2.5 seconds
-  const itemWidth = 180; // item width
-  const margin = 24; // 2 * 12px (margin: 0 0.75rem)
-  const shiftAmount = itemWidth + margin;
-
+  const shiftAmount = 150 + (1 * 16 * 2); 
+  
   setInterval(() => {
-    track.style.transition = "transform 0.5s ease-in-out";
+    track.style.transition = "transform 1s cubic-bezier(0.23, 1, 0.32, 1)";
     track.style.transform = `translateX(-${shiftAmount}px)`;
 
     setTimeout(() => {
-      // Move first child to end
       const firstItem = track.children[0];
       track.appendChild(firstItem);
-
-      // Reset position
       track.style.transition = "none";
       track.style.transform = "translateX(0)";
-    }, 500); // Match transition duration
-  }, interval);
+    }, 1000);
+  }, 4000);
 </script>

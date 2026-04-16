@@ -1,63 +1,147 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Popular Anime and Movies</title>
-  <link rel="stylesheet" href="/css/popular.css">
-</head>
-<body>
-
-  <h1 class="text-3xl font-bold text-center my-6 text-blue-400">Popular Anime and Movies</h1>
-
-  <div class="tab-buttons flex justify-center gap-4 mb-6">
-    <button class="tab-button active" onclick="switchTab('series')">Top 5 Anime Series</button>
-    <button class="tab-button" onclick="switchTab('movies')">Top 5 Anime Movies</button>
-  </div>
-
-  <!-- Series Tab -->
-  <div id="series" class="tab-content active">
-    <div class="anime-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-      <% const series = [
-        { title: "Naruto", rating: 8.6, duration: "25 min.", year: 2007, img: "/images/naruto.png" },
-        { title: "Solo Leveling", rating: 8.5, duration: "24 min.", year: 2024, img: "/images/Solo Leveling.png" },
-        { title: "Demon Slayer", rating: 8.7, duration: "23 min.", year: 2019, img: "/images/Demon Slayer.png" },
-        { title: "Dragon Ball", rating: 8.2, duration: "24 min.", year: 1986, img: "/images/Dragon ball.png" },
-        { title: "Jujutsu Kaisen", rating: 8.8, duration: "24 min.", year: 2020, img: "/images/jujutsu kaisen.png" }
-      ]; %>
-      <% series.forEach((anime, index) => { %>
-        <div class="anime-item bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col items-center hover:scale-105 hover:shadow-2xl transition-transform duration-200 border border-gray-700 hover:border-blue-500 cursor-pointer">
-          <img src="<%= anime.img %>" alt="<%= anime.title %>" class="w-32 h-44 object-cover rounded-md mb-2 border-2 border-transparent hover:border-blue-400 transition-all duration-200">
-          <div class="anime-info text-center">
-            <h2 class="font-bold text-lg text-white mb-1"><%= index + 1 %>. <%= anime.title %></h2>
-            <p class="text-gray-300 text-sm">TMDb <%= anime.rating %> - <%= anime.duration %> - <%= anime.year %></p>
-          </div>
+<section class="popular-section py-16 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto">
+        
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-white uppercase italic">
+                Trending <span class="text-blue-500">Pick</span>
+            </h2>
+            <div class="h-1 w-12 bg-blue-600 mx-auto mt-4 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
         </div>
-      <% }) %>
-    </div>
-  </div>
 
-  <!-- Movies Tab -->
-  <div id="movies" class="tab-content">
-    <div class="anime-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-      <% const movies = [
-        { title: "Demon Slayer: Mugen Train", rating: 8.4, duration: "117 min.", year: 2020, img: "/images/Demon Slayer.png" },
-        { title: "Your Name", rating: 8.5, duration: "106 min.", year: 2016, img: "/images/Teogonia.png" },
-        { title: "Pokemon: The First Movie", rating: 7.4, duration: "75 min.", year: 1998, img: "/images/pokemon.png" },
-        { title: "That Time I Got Reincarnated as a Slime: Scarlet Bond", rating: 7.7, duration: "108 min.", year: 2022, img: "/images/that time i got reincarnated as a slime season.png" },
-        { title: "Teogonia", rating: 7.9, duration: "110 min.", year: 2023, img: "/images/Teogonia.png" }
-      ]; %>
-      <% movies.forEach((movie, index) => { %>
-        <div class="anime-item bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col items-center hover:scale-105 hover:shadow-2xl transition-transform duration-200 border border-gray-700 hover:border-blue-500 cursor-pointer">
-          <img src="<%= movie.img %>" alt="<%= movie.title %>" class="w-32 h-44 object-cover rounded-md mb-2 border-2 border-transparent hover:border-blue-400 transition-all duration-200">
-          <div class="anime-info text-center">
-            <h2 class="font-bold text-lg text-white mb-1"><%= index + 1 %>. <%= movie.title %></h2>
-            <p class="text-gray-300 text-sm">TMDb <%= movie.rating %> - <%= movie.duration %> - <%= movie.year %></p>
-          </div>
+        <div class="flex justify-center mb-12">
+            <div class="glass-tab-container p-1.5 rounded-full flex gap-2">
+                <button class="tab-btn active" onclick="switchTab(event, 'series')">TV Series</button>
+                <button class="tab-btn" onclick="switchTab(event, 'movies')">Movies</button>
+            </div>
         </div>
-      <% }) %>
-    </div>
-  </div>
 
-  <script src="/js/popular.js"></script>
-</body>
-</html>
+        <div id="series" class="tab-content active animate-fade-in">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                <% const series = [
+                    { title: "Naruto", rating: 8.6, duration: "25 min.", year: 2007, img: "/images/naruto.png" },
+                    { title: "Solo Leveling", rating: 8.5, duration: "24 min.", year: 2024, img: "/images/Solo Leveling.png" },
+                    { title: "Demon Slayer", rating: 8.7, duration: "23 min.", year: 2019, img: "/images/Demon Slayer.png" },
+                    { title: "Dragon Ball", rating: 8.2, duration: "24 min.", year: 1986, img: "/images/Dragon ball.png" },
+                    { title: "Jujutsu Kaisen", rating: 8.8, duration: "24 min.", year: 2020, img: "/images/jujutsu kaisen.png" }
+                ]; %>
+                <% series.forEach((item, index) => { %>
+                    <div class="popular-glass-card group">
+                        <div class="relative overflow-hidden rounded-2xl aspect-[3/4]">
+                            <img src="<%= item.img %>" alt="<%= item.title %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-black px-2 py-1 rounded-lg shadow-lg">#<%= index + 1 %></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0e11] via-transparent to-transparent opacity-60"></div>
+                        </div>
+                        <div class="mt-4 px-1 text-center">
+                            <h3 class="text-white font-bold text-sm md:text-base truncate group-hover:text-blue-400 transition-colors"><%= item.title %></h3>
+                            <div class="flex items-center justify-center gap-2 mt-1">
+                                <span class="text-blue-500 text-[10px] font-black uppercase tracking-tighter">★ <%= item.rating %></span>
+                                <span class="text-gray-500 text-[10px] font-bold italic"><%= item.year %></span>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        <div id="movies" class="tab-content animate-fade-in">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                <% const movies = [
+                    { title: "Demon Slayer: Mugen Train", rating: 8.4, duration: "117 min.", year: 2020, img: "/images/Demon Slayer.png" },
+                    { title: "Your Name", rating: 8.5, duration: "106 min.", year: 2016, img: "/images/Teogonia.png" },
+                    { title: "Pokemon: First Movie", rating: 7.4, duration: "75 min.", year: 1998, img: "/images/pokemon.png" },
+                    { title: "Slime: Scarlet Bond", rating: 7.7, duration: "108 min.", year: 2022, img: "/images/that time i got reincarnated as a slime season.png" },
+                    { title: "Teogonia", rating: 7.9, duration: "110 min.", year: 2023, img: "/images/Teogonia.png" }
+                ]; %>
+                <% movies.forEach((item, index) => { %>
+                    <div class="popular-glass-card group">
+                        <div class="relative overflow-hidden rounded-2xl aspect-[3/4]">
+                            <img src="<%= item.img %>" alt="<%= item.title %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-black px-2 py-1 rounded-lg shadow-lg">#<%= index + 1 %></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0e11] via-transparent to-transparent opacity-60"></div>
+                        </div>
+                        <div class="mt-4 px-1 text-center">
+                            <h3 class="text-white font-bold text-sm md:text-base truncate group-hover:text-blue-400 transition-colors"><%= item.title %></h3>
+                            <div class="flex items-center justify-center gap-2 mt-1">
+                                <span class="text-blue-500 text-[10px] font-black uppercase tracking-tighter">★ <%= item.rating %></span>
+                                <span class="text-gray-500 text-[10px] font-bold italic"><%= item.year %></span>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+    /* Navy Obsidian & Glassmorphism Theme */
+    .popular-section { background-color: transparent; }
+
+    .glass-tab-container {
+        background: rgba(21, 27, 35, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .tab-btn {
+        padding: 10px 24px;
+        border-radius: 99px;
+        color: #9ca3af;
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab-btn.active {
+        background: #3b82f6;
+        color: white;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .popular-glass-card {
+        background: rgba(21, 27, 35, 0.4);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 10px;
+        border-radius: 1.5rem;
+        transition: all 0.4s ease;
+    }
+
+    .popular-glass-card:hover {
+        transform: translateY(-8px);
+        background: rgba(21, 27, 35, 0.8);
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+</style>
+
+<script>
+    function switchTab(event, tabId) {
+        // Hide all contents
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => content.classList.remove('active'));
+
+        // Deactivate all buttons
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        // Show selected tab content
+        document.getElementById(tabId).classList.add('active');
+        
+        // Mark current button as active
+        event.currentTarget.classList.add('active');
+    }
+</script>

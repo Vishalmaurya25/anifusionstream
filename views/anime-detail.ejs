@@ -1,284 +1,258 @@
 <%- include('partials/header') %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= anime.name %> - AniFusionStream</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    video::-webkit-media-controls {
-      display: flex !important;
+
+<style>
+    :root {
+        --bg-deep: #0b0e11;
+        --card-navy: #151b23;
+        --accent-blue: #3b82f6;
+        --accent-yellow: #facc15;
+        --glass-border: rgba(255, 255, 255, 0.05);
     }
-    video::-webkit-media-controls-enclosure {
-      border-radius: 0;
+
+    body { 
+        background-color: var(--bg-deep); 
+        font-family: 'Inter', sans-serif;
+        color: #f3f4f6;
     }
+
+    /* Glass Effect Hero Card */
+    .glass-card {
+        background: rgba(21, 27, 35, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 1.5rem;
+    }
+
+    /* Strict 3-Column Episode Card */
     .episode-card {
-      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s, background 0.2s;
+        background: var(--card-navy);
+        border: 1px solid var(--glass-border);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 1rem;
+        overflow: hidden;
     }
+
     .episode-card:hover {
-      box-shadow: 0 8px 32px 0 rgba(59,130,246,0.25), 0 2px 8px 0 rgba(0,0,0,0.18);
-      border-color: #60a5fa;
-      background: linear-gradient(135deg, #2563eb 60%, #ec4899 100%);
+        transform: translateY(-5px);
+        border-color: var(--accent-blue);
+        box-shadow: 0 15px 30px -10px rgba(59, 130, 246, 0.4);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
     }
-  </style>
-</head>
-<body class="bg-gray-900 text-white">
-  <!-- Ad Blocker Message -->
-  <div id="adblock-message" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-      <h2 class="text-2xl font-bold mb-4">Ad Blocker Detected</h2>
-      <p class="mb-4">We noticed you're using an ad blocker. Please disable it to support AniFusionStream and enjoy uninterrupted streaming.</p>
-      <button onclick="document.getElementById('adblock-message').classList.add('hidden')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">I Understand</button>
-    </div>
-  </div>
 
-  <div class="container mx-auto p-4">
-    <!-- Description Section with Image -->
-    <div class="max-w-6xl mx-auto mb-8 rounded-2xl shadow-2xl overflow-hidden bg-gradient-to-r from-[#1c1b2b] to-[#12111a] backdrop-blur-lg flex flex-col md:flex-row gap-6 p-4 md:p-8 items-center">
-      <img src="<%= anime.imageUrl %>"
-           alt="<%= anime.name %>"
-           class="w-full md:w-[260px] max-w-xs h-64 md:h-80 object-cover rounded-2xl shadow-lg mx-auto md:mx-0 transition-transform duration-300 hover:scale-105" />
-      <div class="flex-1 w-full flex flex-col gap-4">
-        <h1 class="text-2xl md:text-3xl font-extrabold flex items-center gap-2">
-          <% const nameParts = anime.name.split(' '); %>
-          <span class="text-white drop-shadow"> <%= nameParts[0] %> </span>
-          <% if (nameParts.length > 1) { %>
-            <span class="text-yellow-400 drop-shadow"> <%= nameParts.slice(1).join(' ') %> </span>
-          <% } %>
-        </h1>
-        <div class="flex flex-wrap gap-2 items-center text-xs md:text-sm text-gray-300 font-medium">
-          <% if (anime.duration) { %>
-            <span class="flex items-center gap-1 bg-gray-800/70 px-2 py-1 rounded-full"><span>🕒</span> <%= anime.duration %></span>
-          <% } %>
-          <% if (anime.year) { %>
-            <span class="flex items-center gap-1 bg-gray-800/70 px-2 py-1 rounded-full"><span>📅</span> <%= anime.year %></span>
-          <% } %>
-          <!-- <% if (anime.seasons && anime.seasons.length > 0) { %>
-            <span class="flex items-center gap-1 bg-gray-800/70 px-2 py-1 rounded-full"><span>🎬</span> <%= anime.seasons.length %> Season<%= anime.seasons.length > 1 ? 's' : '' %></span>
-          <% } %> -->
+    .player-shadow {
+        box-shadow: 0 0 80px -20px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Custom scrollbar for better elegance */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+</style>
+
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+
+    <div class="glass-card mb-10 p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
+        <div class="relative group">
+            <img src="<%= anime.imageUrl %>" alt="<%= anime.name %>" 
+                 class="w-full md:w-64 rounded-xl shadow-2xl object-cover transition-transform duration-500 hover:scale-105">
+            <div class="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10"></div>
         </div>
-        <p class="text-gray-300 text-base md:text-lg leading-relaxed font-normal md:font-medium tracking-wide">
-          <%= anime.description %>
-        </p>
-        <div>
-          <h2 class="text-lg font-bold mb-1 text-blue-400">Genres</h2>
-          <div class="flex flex-wrap gap-2 mt-2">
-            <% anime.genres.forEach(genre => { %>
-              <span class="px-3 py-1 rounded-full text-xs md:text-sm font-semibold shadow bg-yellow-600 text-gray-900 hover:bg-pink-600 transition-colors duration-200 cursor-pointer"> <%= genre.name %> </span>
-            <% }) %>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Video Player -->
-    <div id="video-player" class="w-full mb-6 hidden">
-      <div class="relative w-full aspect-video">
-        <video 
-          id="episode-video"
-          class="absolute inset-0 w-full h-full" 
-          controls 
-          controlsList="nodownload" 
-          poster="<%= anime.imageUrl %>"
-          preload="metadata">
-          <source id="video-source" src="" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
-      </div>
-      <h3 id="video-title" class="text-xl font-bold mt-2"></h3>
-    </div>
+        <div class="flex-1 space-y-4">
+            <h1 class="text-3xl md:text-5xl font-black tracking-tighter uppercase leading-tight">
+                <% const nameParts = anime.name.split(' '); %>
+                <span class="text-white"><%= nameParts[0] %></span>
+                <span class="text-yellow-400"><%= nameParts.slice(1).join(' ') %></span>
+            </h1>
 
-    <!-- Season Dropdown -->
-    <div class="mb-6">
-      <label for="season-select" class="block text-lg font-bold mb-2">Select Season:</label>
-      <select id="season-select" class="w-full md:w-1/4 p-2 rounded bg-gray-700 text-white focus:outline-none">
-        <% anime.seasons.forEach((season, index) => { %>
-          <option value="<%= index %>">Season <%= season.seasonNumber %></option>
-        <% }) %>
-      </select>
-    </div>
-
-    <!-- Episodes Grid -->
-    <div id="episodes-container">
-      <% anime.seasons.forEach((season, seasonIndex) => { %>
-        <div class="season-section <%= seasonIndex === 0 ? '' : 'hidden' %>" data-season="<%= seasonIndex %>">
-          <h3 class="text-xl font-bold mb-4">Season <%= season.seasonNumber %></h3>
-          <div class="grid grid-cols-3 md:grid-cols-4 gap-4">
-            <% season.episodes.forEach(episode => { %>
-              <div class="episode-card bg-gray-800 rounded-lg shadow-md overflow-hidden hover:bg-gradient-to-br hover:from-blue-700 hover:to-pink-500 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer border-2 border-transparent hover:border-blue-400 group"
-                   data-video-url="<%= episode.videoUrl %>"
-                   data-embed-code="<%= episode.embedCode || '' %>"
-                   data-title="Season <%= season.seasonNumber %> - Episode <%= episode.episodeNumber %>: <%= episode.title %>">
-                <div class="relative w-full aspect-video">
-                  <img src="<%= anime.imageUrl %>" alt="<%= episode.title %>" class="absolute inset-0 w-full h-full object-cover group-hover:opacity-80 transition duration-200">
-                  <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 group-hover:bg-opacity-30 transition duration-200">
-                    <svg class="w-12 h-12 text-white group-hover:text-blue-300 transition duration-200" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M5 3l10 7-10 7V3z"/>
-                    </svg>
-                  </div>
-                </div>
-                <div class="p-3">
-                  <h4 class="font-bold text-sm md:text-base group-hover:text-yellow-200 transition duration-200">Ep <%= episode.episodeNumber %>: <%= episode.title %></h4>
-                </div>
-              </div>
-            <% }) %>
-          </div>
-        </div>
-      <% }) %>
-    </div>
-
-
-    <!-- Comments Section -->
-<div class="mt-8">
-  <h2 class="text-2xl font-bold mb-4">Comments</h2>
-
-  <% if (messages.error) { %>
-    <div class="bg-red-500 text-white p-2 rounded mb-4"><%= messages.error %></div>
-  <% } %>
-  <% if (messages.success) { %>
-    <div class="bg-green-500 text-white p-2 rounded mb-4"><%= messages.success %></div>
-  <% } %>
-
-  <% if (session.user || session.isAdminAuthenticated) { %>
-    <form action="/anime/comment/<%= anime._id %>" method="POST" class="mb-6">
-      <div class="flex flex-col">
-        <textarea name="content" rows="3" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none mb-2" placeholder="Write your comment..." required></textarea>
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 self-start">Post Comment</button>
-      </div>
-    </form>
-  <% } else { %>
-    <p class="text-gray-300 mb-4">Please <a href="/user/login" class="text-blue-400 hover:underline">log in</a> to post a comment.</p>
-  <% } %>
-
-  <% function renderComments(comments, depth = 0) { %>
-    <% comments.forEach(function(comment) { %>
-      <% const marginClass = 'ml-' + (depth * 4); %>
-      <div class="bg-gray-800 p-4 rounded-lg shadow-md <%= marginClass %> mb-3">
-        <div class="flex justify-between items-center mb-2">
-          <div>
-            <% if (session.isAdminAuthenticated) { %>
-              <span class="font-bold text-blue-400"><%= comment.username %></span>
-              <span class="text-gray-400 text-sm">(<%= comment.email %>)</span>
-            <% } else { %>
-              <span class="font-bold text-blue-400"><%= comment.username %></span>
-            <% } %>
-            <span class="text-gray-400 text-sm">
-              <% 
-                const date = new Date(comment.createdAt);
-                if (!isNaN(date.getTime())) { %>
-                  <%= date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) %>
-              <% } else { %>
-                  Date unavailable
-              <% } %>
-            </span>
-          </div>
-          <% if ((session.user && comment.user && session.user._id.toString() === comment.user._id.toString()) || session.isAdminAuthenticated) { %>
-            <form action="/anime/comment/delete/<%= anime._id %>/<%= comment._id %>" method="POST" class="inline">
-              <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
-            </form>
-          <% } %>
-        </div>
-        <p class="text-gray-200 mb-2"><%= comment.content %></p>
-
-        <% if (session.user || session.isAdminAuthenticated) { %>
-          <form action="/anime/comment/reply/<%= anime._id %>/<%= comment._id %>" method="POST" class="mt-2">
-            <div class="flex flex-col">
-              <textarea name="content" rows="2" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none mb-2" placeholder="Write a reply..." required></textarea>
-              <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 self-start text-sm">Reply</button>
+            <div class="flex flex-wrap gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                <span class="bg-white/5 px-3 py-1.5 rounded-full border border-white/5">📅 <%= anime.year || '2024' %></span>
+                <span class="bg-white/5 px-3 py-1.5 rounded-full border border-white/5">🕒 <%= anime.duration || '24m' %></span>
+                <span class="bg-blue-500/10 text-blue-400 px-3 py-1.5 rounded-full border border-blue-500/20">HD Dual Audio</span>
             </div>
-          </form>
-        <% } else { %>
-          <p class="text-gray-300 text-sm mt-2">
-            <a href="/user/login" class="text-blue-400 hover:underline">Log in</a> to reply.
-          </p>
-        <% } %>
 
-        <% if (comment.replies && comment.replies.length > 0) { %>
-          <% renderComments(comment.replies, depth + 1); %>
-        <% } %>
-      </div>
-    <% }); %>
-  <% } %>
+            <p class="text-gray-300 leading-relaxed font-medium text-base md:text-lg border-l-2 border-blue-500 pl-4">
+                <%= anime.description %>
+            </p>
 
-  <% if (comments && comments.length > 0) { %>
-    <div class="space-y-4">
-      <% renderComments(comments); %>
+            <div class="pt-2">
+                <h3 class="text-xs font-black uppercase tracking-widest text-gray-500 mb-3">Genre Classification</h3>
+                <div class="flex flex-wrap gap-2">
+                    <% anime.genres.forEach(genre => { %>
+                        <span class="px-4 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest bg-gray-800 border border-white/5 hover:border-blue-500 transition-all cursor-default">
+                            <%= genre.name %>
+                        </span>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
     </div>
-  <% } else { %>
-    <p class="text-gray-300">No comments yet. Be the first to comment!</p>
-  <% } %>
+
+    <div id="video-area" class="mb-12 hidden">
+        <div class="glass-card p-2 player-shadow overflow-hidden">
+            <div id="player-container" class="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+                </div>
+        </div>
+        <div class="mt-4 flex justify-between items-center">
+            <h2 id="active-video-title" class="text-xl font-black text-white uppercase tracking-tight"></h2>
+            <button onclick="document.getElementById('video-area').classList.add('hidden')" class="text-xs font-bold text-gray-500 hover:text-white uppercase tracking-widest">Close Player ×</button>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <h2 class="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
+            <div class="w-1.5 h-6 bg-blue-500 rounded-full"></div>
+            Episode <span class="text-gray-500">Library</span>
+        </h2>
+        
+        <div class="relative">
+            <select id="season-select" class="appearance-none bg-gray-800 border border-white/10 text-white px-6 py-2 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px]">
+                <% anime.seasons.forEach((season, index) => { %>
+                    <option value="<%= index %>">Season <%= season.seasonNumber %></option>
+                <% }) %>
+            </select>
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-blue-500">
+                ▼
+            </div>
+        </div>
+    </div>
+
+    <div id="episodes-container">
+        <% anime.seasons.forEach((season, seasonIndex) => { %>
+            <div class="season-section grid grid-cols-3 gap-4 md:gap-6 <%= seasonIndex === 0 ? '' : 'hidden' %>" data-season="<%= seasonIndex %>">
+                <% season.episodes.forEach(episode => { %>
+                    <div class="episode-card p-2 cursor-pointer group"
+                         data-video-url="<%= episode.videoUrl %>"
+                         data-embed-code="<%= episode.embedCode || '' %>"
+                         data-title="Ep <%= episode.episodeNumber %>: <%= episode.title %>">
+                        <div class="relative aspect-video rounded-lg overflow-hidden mb-3">
+                            <img src="<%= anime.imageUrl %>" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-transparent transition-all">
+                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center shadow-xl transform scale-0 group-hover:scale-100 transition-transform">
+                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3l10 7-10 7V3z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1.5 left-1.5 bg-black/80 px-2 py-0.5 rounded text-[9px] font-black uppercase border border-white/10">
+                                EP <%= episode.episodeNumber %>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-[11px] md:text-sm text-gray-200 group-hover:text-blue-400 transition-colors truncate">
+                            <%= episode.title %>
+                        </h4>
+                    </div>
+                <% }) %>
+            </div>
+        <% }) %>
+    </div>
+
+    <div class="mt-20 glass-card p-6 md:p-10">
+        <h2 class="text-3xl font-black uppercase tracking-tighter mb-8">Community <span class="text-blue-500">Voice</span></h2>
+        
+        <% if (session.user || session.isAdminAuthenticated) { %>
+            <form action="/anime/comment/<%= anime._id %>" method="POST" class="mb-10">
+                <div class="relative">
+                    <textarea name="content" rows="3" class="w-full p-5 rounded-2xl bg-black/30 border border-white/5 text-white focus:outline-none focus:border-blue-500 transition-all placeholder-gray-600 font-medium" placeholder="Join the discussion..."></textarea>
+                    <button type="submit" class="absolute bottom-4 right-4 bg-blue-600 text-white px-6 py-1.5 rounded-lg font-bold uppercase text-xs tracking-widest hover:bg-blue-500 transition-colors">Post</button>
+                </div>
+            </form>
+        <% } %>
+
+        <div class="space-y-6">
+            <% function renderComments(comments, depth = 0) { %>
+                <% comments.forEach(function(comment) { %>
+                    <div class="bg-white/5 p-5 rounded-2xl border border-white/5 <%= depth > 0 ? 'ml-8 mt-4 border-l-2 border-blue-500/30' : '' %>">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="font-black text-blue-400 text-xs uppercase tracking-wider"><%= comment.username %></span>
+                                <% if (session.isAdminAuthenticated) { %><span class="text-[10px] text-gray-500 italic"><%= comment.email %></span><% } %>
+                            </div>
+                            <span class="text-[10px] text-gray-500 font-bold uppercase"><%= new Date(comment.createdAt).toLocaleDateString('en-IN') %></span>
+                        </div>
+                        <p class="text-sm text-gray-300 leading-relaxed"><%= comment.content %></p>
+                        
+                        <% if (session.user || session.isAdminAuthenticated) { %>
+                            <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="mt-3 text-[10px] font-black uppercase text-blue-500/60 hover:text-blue-500 tracking-widest">Reply</button>
+                            <form action="/anime/comment/reply/<%= anime._id %>/<%= comment._id %>" method="POST" class="mt-3 hidden">
+                                <div class="flex gap-2">
+                                    <input name="content" class="flex-1 bg-black/40 border border-white/5 rounded-lg px-4 py-1 text-sm text-white" placeholder="Write a reply...">
+                                    <button class="bg-blue-600 px-4 py-1 rounded-lg text-xs font-bold uppercase">Send</button>
+                                </div>
+                            </form>
+                        <% } %>
+                        
+                        <% if (comment.replies && comment.replies.length > 0) { %>
+                            <% renderComments(comment.replies, depth + 1); %>
+                        <% } %>
+                    </div>
+                <% }); %>
+            <% } %>
+
+            <% if (comments && comments.length > 0) { renderComments(comments); } else { %>
+                <p class="text-center py-10 text-gray-600 font-bold uppercase tracking-widest text-xs">No transmissions yet. Start the conversation.</p>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold mb-4 text-blue-400">Random Anime</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-6">
+            <% (randomAnimes || []).forEach(function(anime) { %>
+                <div class="anime-card flex flex-col items-center bg-gray-800 rounded-lg shadow-lg p-2 hover:shadow-2xl transition-shadow duration-300">
+                    <a href="/anime/<%= anime._id %>" class="relative w-full">
+                        <img src="<%= anime.imageUrl %>" alt="<%= anime.name %>" class="w-full h-48 object-cover rounded-md transition-transform duration-200 hover:scale-105 shadow-md">
+                    </a>
+                    <p class="text-center mt-2 text-white font-semibold hover:text-blue-300 transition-colors duration-200 truncate w-full text-base"><%= anime.name %></p>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
 </div>
 
-<!-- Random Anime Section -->
-<div class="mt-12">
-  <h2 class="text-2xl font-bold mb-4 text-blue-400">Random Anime</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-6">
-    <% 
-      // Shuffle and pick 8 random anime from the homepage animes (passed as randomAnimes)
-      (randomAnimes || []).forEach(function(anime) { 
-    %>
-      <div class="anime-card flex flex-col items-center bg-gray-800 rounded-lg shadow-lg p-2 hover:shadow-2xl transition-shadow duration-300">
-        <a href="/anime/<%= anime._id %>" class="relative w-full">
-          <img src="<%= anime.imageUrl %>" alt="<%= anime.name %>" class="w-full h-48 object-cover rounded-md transition-transform duration-200 hover:scale-105 shadow-md">
-        </a>
-        <p class="text-center mt-2 text-white font-semibold hover:text-blue-300 transition-colors duration-200 truncate w-full text-base"><%= anime.name %></p>
-      </div>
-    <% }); %>
-  </div>
-</div>
-
-  <script>
+<script>
     const seasonSelect = document.getElementById('season-select');
     const seasonSections = document.querySelectorAll('.season-section');
-    const videoPlayer = document.getElementById('video-player');
-    const videoElement = document.getElementById('episode-video');
-    const videoSource = document.getElementById('video-source');
-    const videoTitle = document.getElementById('video-title');
+    const videoArea = document.getElementById('video-area');
+    const playerContainer = document.getElementById('player-container');
+    const videoTitleDisplay = document.getElementById('active-video-title');
     const episodeCards = document.querySelectorAll('.episode-card');
 
-    // Season selection
+    // Season Switching
     seasonSelect.addEventListener('change', (e) => {
-      const selectedSeason = e.target.value;
-      seasonSections.forEach(section => {
-        if (section.dataset.season === selectedSeason) {
-          section.classList.remove('hidden');
-        } else {
-          section.classList.add('hidden');
-        }
-      });
-      videoPlayer.classList.add('hidden'); // Hide video player when changing seasons
+        const selected = e.target.value;
+        seasonSections.forEach(s => s.dataset.season === selected ? s.classList.remove('hidden') : s.classList.add('hidden'));
+        videoArea.classList.add('hidden'); 
     });
 
-    // Episode selection and video playback
+    // Unified Player Logic
     episodeCards.forEach(card => {
-      card.addEventListener('click', () => {
-        const videoUrl = card.dataset.videoUrl;
-        const embedCode = card.dataset.embedCode;
-        const title = card.dataset.title;
+        card.addEventListener('click', () => {
+            const videoUrl = card.dataset.videoUrl;
+            const embedCode = card.dataset.embedCode;
+            const title = card.dataset.title;
 
-        // Remove any existing video or embed
-        videoElement.style.display = 'block';
-        videoPlayer.innerHTML = ''; // Clear previous content
-        videoPlayer.appendChild(videoElement); // Re-add video element
-        videoPlayer.appendChild(videoTitle); // Re-add title element
+            playerContainer.innerHTML = '';
 
-        if (embedCode) {
-          // If embedCode exists, use it
-          videoPlayer.innerHTML = embedCode + `<h3 class="text-xl font-bold mt-2">${title}</h3>`;
-        } else {
-          // Use videoUrl with <video> player
-          videoSource.src = videoUrl;
-          videoTitle.textContent = title;
-          videoElement.load();
-          videoElement.play();
-        }
+            if (embedCode && embedCode.trim() !== '') {
+                playerContainer.innerHTML = embedCode;
+                const iframe = playerContainer.querySelector('iframe');
+                if (iframe) iframe.className = "absolute inset-0 w-full h-full border-0";
+            } else {
+                playerContainer.innerHTML = `
+                    <video id="active-player" class="absolute inset-0 w-full h-full" controls autoplay poster="<%= anime.imageUrl %>">
+                        <source src="${videoUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>`;
+            }
 
-        videoPlayer.classList.remove('hidden');
-      });
+            videoTitleDisplay.textContent = title;
+            videoArea.classList.remove('hidden');
+            videoArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
     });
-  </script>
-  <script src="/js/adblock.js"></script>
-</body>
-</html>
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <%- include('partials/footer') %>

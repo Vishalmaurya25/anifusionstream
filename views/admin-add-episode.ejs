@@ -1,42 +1,155 @@
 <%- include('partials/header') %>
-<div class="container mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-4">Add Episode to <%= anime.name %></h1>
-  
-  <% if (messages.error) { %>
-    <div class="bg-red-500 text-white p-2 rounded mb-4"><%= messages.error %></div>
-  <% } %>
-  
-  <% if (messages.success) { %>
-    <div class="bg-green-500 text-white p-2 rounded mb-4"><%= messages.success %></div>
-  <% } %>
-  
-  <form action="/admin/add-episode/<%= anime._id %>" method="POST" enctype="application/x-www-form-urlencoded">
-    <div class="mb-4">
-      <label class="block mb-1" for="seasonNumber">Season Number</label>
-      <input type="number" id="seasonNumber" name="seasonNumber" class="w-full p-2 rounded bg-gray-700 text-white" required min="1" />
+
+<style>
+    :root {
+        --bg-deep: #0b0e11;
+        --card-navy: #151b23;
+        --input-dark: #1c232d;
+        --primary-blue: #3b82f6;
+        --text-muted: #9ca3af;
+    }
+
+    body { 
+        background-color: var(--bg-deep); 
+        color: #ffffff; 
+        font-family: 'Inter', sans-serif; 
+    }
+
+    .admin-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 90vh;
+        width: 100%;
+        padding: 4rem 1.5rem;
+    }
+
+    .ui-card {
+        background-color: var(--card-navy);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 2.5rem;
+        width: 100%;
+        max-width: 650px;
+        padding: 3rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .ui-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.6rem;
+        display: block;
+    }
+
+    .ui-input {
+        background-color: var(--input-dark);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        color: #ffffff;
+        padding: 1.1rem;
+        width: 100%;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+    }
+
+    .ui-input:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 1px var(--primary-blue);
+    }
+
+    .ui-button {
+        background-color: var(--primary-blue);
+        color: #ffffff;
+        font-weight: 800;
+        padding: 1.2rem;
+        border-radius: 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 1rem;
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .ui-button:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+        box-shadow: 0 15px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .back-link {
+        color: var(--primary-blue);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-decoration: none;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        letter-spacing: 0.05em;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+</style>
+
+<div class="admin-wrapper">
+    <div class="text-center mb-10">
+        <a href="/admin/dashboard" class="back-link">← RETURN TO CORE</a>
+        <h1 class="text-4xl md:text-5xl font-black tracking-tighter">
+            Add <span class="text-blue-500">Episode</span>
+        </h1>
+        <p class="text-gray-500 mt-2 font-medium">Link new content to: <span class="text-white font-bold"><%= anime.name %></span></p>
     </div>
-    
-    <div class="mb-4">
-      <label class="block mb-1" for="episodeNumber">Episode Number</label>
-      <input type="number" id="episodeNumber" name="episodeNumber" class="w-full p-2 rounded bg-gray-700 text-white" required min="1" />
+
+    <div class="ui-card">
+        <% if (messages.error) { %>
+            <div class="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl mb-8 text-xs font-bold text-center uppercase tracking-widest">
+                <%= messages.error %>
+            </div>
+        <% } %>
+
+        <form action="/admin/add-episode/<%= anime._id %>" method="POST">
+            
+            <div class="grid grid-cols-2 gap-5 mb-8">
+                <div>
+                    <label class="ui-label">Season</label>
+                    <input type="number" name="seasonNumber" placeholder="1" class="ui-input" required min="1">
+                </div>
+                <div>
+                    <label class="ui-label">Episode</label>
+                    <input type="number" name="episodeNumber" placeholder="1" class="ui-input" required min="1">
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <label class="ui-label">Episode Title</label>
+                <input type="text" name="title" placeholder="Enter title..." class="ui-input" required>
+            </div>
+
+            <div class="mb-8">
+                <label class="ui-label">Thumbnail URL (Episode Cover)</label>
+                <input type="url" name="imageUrl" placeholder="https://..." class="ui-input">
+            </div>
+
+            <div class="mb-8">
+                <label class="ui-label">Direct Video URL</label>
+                <input type="url" name="videoUrl" placeholder="MP4 link..." class="ui-input">
+            </div>
+
+            <div class="mb-10">
+                <label class="ui-label">Iframe / Embed Code</label>
+                <textarea name="embedCode" rows="4" placeholder="Paste <iframe> here..." class="ui-input"></textarea>
+            </div>
+
+            <button type="submit" class="ui-button">
+                Publish Episode
+            </button>
+        </form>
     </div>
-    
-    <div class="mb-4">
-      <label class="block mb-1" for="title">Episode Title</label>
-      <input type="text" id="title" name="title" class="w-full p-2 rounded bg-gray-700 text-white" required />
-    </div>
-    
-    <div class="mb-4">
-      <label class="block mb-1" for="videoUrl">Video URL (optional)</label>
-      <input type="url" id="videoUrl" name="videoUrl" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="https://strtape.tech/e/..." />
-    </div>
-    
-    <div class="mb-4">
-      <label class="block mb-1" for="embedCode">Embed Code (optional)</label>
-      <textarea id="embedCode" name="embedCode" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="<iframe src='...'></iframe>"></textarea>
-    </div>
-    
-    <button type="submit" class="bg-blue-500 p-2 rounded">Add Episode</button>
-  </form>
 </div>
+
 <%- include('partials/footer') %>

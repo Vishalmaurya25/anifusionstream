@@ -1,0 +1,149 @@
+<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | AniFusionStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0f1014;
+            --card-navy: #151b23;
+            --input-dark: #1c232d;
+            --primary-blue: #3b82f6;
+            --text-muted: #9ca3af;
+        }
+
+        /* Centering Wrapper */
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers horizontally */
+            justify-content: center; /* Centers vertically */
+            min-height: 80vh; /* Takes up most of the screen height */
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        body { 
+            background-color: var(--bg-deep); 
+            color: #ffffff; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        .ui-card {
+            background-color: var(--card-navy);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
+            width: 100%;
+            max-width: 550px; /* Limits width on laptop */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .ui-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .ui-input {
+            background-color: var(--input-dark);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            color: #ffffff;
+            padding: 1.1rem;
+            width: 100%;
+        }
+
+        .ui-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 1px var(--primary-blue);
+        }
+
+        .ui-button {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 1.1rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .ui-button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
+                Contact <span class="text-blue-500">Us</span>
+            </h1>
+            <p class="text-gray-400 text-base md:text-lg">
+                Have a question, feedback, or a business inquiry? <br class="hidden md:block"> Send us a message!
+            </p>
+        </div>
+
+        <div class="ui-card p-8 md:p-12">
+            
+            <% if (messages.error) { %>
+                <div class="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl mb-6 text-sm font-bold text-center">
+                    <%= messages.error %>
+                </div>
+            <% } %>
+            <% if (messages.success) { %>
+                <div class="bg-blue-500/10 border border-blue-500/50 text-blue-400 p-4 rounded-xl mb-6 text-sm font-bold text-center">
+                    <%= messages.success %>
+                </div>
+            <% } %>
+
+            <form action="/contact-us" method="POST">
+                <div class="mb-6">
+                    <label class="ui-label">Your Name</label>
+                    <input type="text" name="name" class="ui-input" placeholder="Your Name" required>
+                </div>
+
+                <div class="mb-6">
+                    <label class="ui-label">Email Address</label>
+                    <input type="email" name="email" class="ui-input" placeholder="Your Email" required>
+                </div>
+
+                <div class="mb-6">
+                    <label class="ui-label">Subject</label>
+                    <select name="subject" class="ui-input" style="appearance: none;" required>
+                        <option value="" disabled selected>Select a subject</option>
+                        <option value="Copyright Complaint">Copyright Complaint</option>
+                        <option value="Anime Suggestion">Anime Suggestion</option>
+                        <option value="Dead Link Report">Dead Link Report</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-8">
+                    <label class="ui-label">Message</label>
+                    <textarea name="message" rows="4" class="ui-input" placeholder="Your Message" required></textarea>
+                </div>
+
+                <button type="submit" class="ui-button">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
+<%- include('partials/footer') %>

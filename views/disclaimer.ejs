@@ -1,0 +1,144 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --bg-deep: #0b0e11;
+        --card-navy: #151b23;
+        --accent-yellow: #facc15;
+        --accent-blue: #3b82f6;
+        --text-muted: #9ca3af;
+    }
+
+    body { 
+        background-color: var(--bg-deep); 
+        color: #ffffff; 
+        font-family: 'Inter', sans-serif; 
+    }
+
+    .legal-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5rem 1.25rem;
+        min-height: 80vh;
+    }
+
+    .glass-legal-card {
+        background-color: var(--card-navy);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 2.5rem;
+        width: 100%;
+        max-width: 900px;
+        padding: 4rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .section-title {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--accent-yellow);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .legal-content {
+        line-height: 1.8;
+        color: #d1d5db;
+        font-size: 1rem;
+    }
+
+    .highlight-box {
+        background: rgba(59, 130, 246, 0.05);
+        border-left: 4px solid var(--accent-blue);
+        padding: 1.5rem 2rem;
+        border-radius: 0.5rem 1.5rem 1.5rem 0.5rem;
+        margin: 2rem 0;
+    }
+
+    .action-btn {
+        background-color: var(--accent-blue);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        filter: brightness(1.1);
+    }
+</style>
+
+<div class="legal-wrapper">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-4">
+            Legal <span class="text-blue-500">Disclaimer</span>
+        </h1>
+        <div class="w-24 h-1 bg-yellow-400 mx-auto rounded-full"></div>
+    </div>
+
+    <div class="glass-legal-card">
+        <div class="legal-content">
+            
+            <div class="mb-10">
+                <h2 class="section-title">
+                    <i class="fas fa-server"></i> Content Hosting & Storage
+                </h2>
+                <p>
+                    <strong>AniFusionStream</strong> does not host, store, or upload any video files, media, or copyrighted content on its own servers. Our platform acts as a sophisticated indexing engine that crawls and organizes links already available on the public internet. All media content is provided and hosted by non-affiliated third-party providers.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <p class="text-white font-bold italic">
+                    "We do not support or encourage piracy. Our mission is to provide an organized library of content that is already accessible to the public on various third-party platforms."
+                </p>
+            </div>
+
+            <div class="mb-10">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i> Information Accuracy
+                </h2>
+                <p>
+                    While we strive to provide the most accurate metadata for Hindi, Tamil, and Telugu dubbed anime, AniFusionStream makes no guarantees regarding the completeness or reliability of the information provided. Use of our service is at your own risk.
+                </p>
+            </div>
+
+            <div class="mb-10">
+                <h2 class="section-title">
+                    <i class="fas fa-gavel"></i> Copyright Infringement (DMCA)
+                </h2>
+                <p>
+                    We respect the intellectual property rights of others. If you are a copyright owner and believe that any content linked through our site infringes upon your rights, we are ready to assist. Please visit our dedicated 
+                    <a href="/dmca" class="text-blue-500 font-bold hover:underline">DMCA Page</a> to submit a removal request.
+                </p>
+            </div>
+
+            <hr class="border-white/5 my-10">
+
+            <div class="text-center">
+                <p class="text-sm text-gray-500 mb-8 font-medium">
+                    By using this website, you acknowledge that you have read and understood this disclaimer.
+                </p>
+                <a href="/contact-us" class="action-btn">
+                    Contact Legal Team
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<%- include('partials/footer') %>

@@ -1,34 +1,178 @@
 <%- include('partials/header') %>
-<div class="container mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-4">Edit Episode - <%= anime.name %> (Season <%= season.seasonNumber %>)</h1>
-  <% if (messages.error) { %>
-    <div class="bg-red-500 text-white p-2 rounded mb-4"><%= messages.error %></div>
-  <% } %>
-  <% if (messages.success) { %>
-    <div class="bg-green-500 text-white p-2 rounded mb-4"><%= messages.success %></div>
-  <% } %>
-  <form action="/anime/edit-episode/<%= anime._id %>/<%= season._id %>/<%= episode._id %>" method="POST" enctype="application/x-www-form-urlencoded">
-    <div class="mb-4">
-      <label class="block mb-1">Episode Number</label>
-      <input type="number" name="episodeNumber" value="<%= episode.episodeNumber %>" class="w-full p-2 rounded bg-gray-700 text-white" required min="1">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Episode | AniFusionStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0b0e11;
+            --card-navy: #151b23;
+            --input-dark: #1c232d;
+            --primary-blue: #3b82f6;
+            --text-muted: #9ca3af;
+        }
+
+        body { 
+            background-color: var(--bg-deep); 
+            color: #ffffff; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        /* Full page centering wrapper */
+        .admin-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            width: 100%;
+            padding: 2rem 1.25rem;
+        }
+
+        .ui-card {
+            background-color: var(--card-navy);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
+            width: 100%;
+            max-width: 650px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .ui-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .ui-input {
+            background-color: var(--input-dark);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.85rem;
+            color: #ffffff;
+            padding: 1.1rem;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .ui-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 1px var(--primary-blue);
+        }
+
+        .ui-button {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 1.1rem;
+            border-radius: 0.85rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: none;
+        }
+
+        .ui-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .back-link {
+            color: var(--primary-blue);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover { opacity: 0.8; }
+
+        @media (max-width: 640px) {
+            .ui-card { padding: 2rem 1.5rem; }
+            .grid-cols-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        
+        <div class="text-center mb-10">
+            <a href="/admin/dashboard" class="back-link">← DISCARD CHANGES</a>
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight">
+                Edit <span class="text-blue-500">Episode</span>
+            </h1>
+            <p class="text-gray-500 mt-2">
+                <%= anime.name %> — <span class="text-white">Season <%= season.seasonNumber %></span>
+            </p>
+        </div>
+
+        <div class="ui-card">
+            
+            <% if (messages.error) { %>
+                <div class="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl mb-6 text-sm font-bold text-center">
+                    <%= messages.error %>
+                </div>
+            <% } %>
+            <% if (messages.success) { %>
+                <div class="bg-blue-500/10 border border-blue-500/50 text-blue-400 p-4 rounded-xl mb-6 text-sm font-bold text-center">
+                    <%= messages.success %>
+                </div>
+            <% } %>
+
+            <form action="/anime/edit-episode/<%= anime._id %>/<%= season._id %>/<%= episode._id %>" method="POST" enctype="application/x-www-form-urlencoded">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="ui-label">Episode Number</label>
+                        <input type="number" name="episodeNumber" value="<%= episode.episodeNumber %>" class="ui-input" required min="1">
+                    </div>
+                    <div>
+                        <label class="ui-label">Season Number</label>
+                        <input type="number" name="seasonNumber" value="<%= season.seasonNumber %>" class="ui-input" required min="1">
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="ui-label">Episode Title</label>
+                    <input type="text" name="title" value="<%= episode.title %>" class="ui-input" required>
+                </div>
+
+                <div class="mb-8">
+                    <label class="ui-label">Thumbnail Image URL</label>
+                    <input type="url" name="imageUrl" value="<%= episode.imageUrl %>" class="ui-input" placeholder="https://image-link.com/thumb.jpg">
+                </div>
+
+                <div class="mb-8">
+                    <label class="ui-label">Direct Video URL (Optional)</label>
+                    <input type="url" name="videoUrl" value="<%= episode.videoUrl %>" class="ui-input" placeholder="https://strtape.tech/e/...">
+                </div>
+
+                <div class="mb-10">
+                    <label class="ui-label">Embed Code (Optional)</label>
+                    <textarea name="embedCode" rows="4" class="ui-input" placeholder="<iframe src='...'></iframe>"><%= episode.embedCode %></textarea>
+                </div>
+
+                <button type="submit" class="ui-button">
+                    Update Episode Data
+                </button>
+            </form>
+        </div>
     </div>
-    <div class="mb-4">
-      <label class="block mb-1">Episode Title</label>
-      <input type="text" name="title" value="<%= episode.title %>" class="w-full p-2 rounded bg-gray-700 text-white" required>
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1">Video URL (optional)</label>
-      <input type="url" name="videoUrl" value="<%= episode.videoUrl %>" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="https://strtape.tech/e/...">
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1">Embed Code (optional)</label>
-      <textarea name="embedCode" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="<iframe src='...'></iframe>"><%= episode.embedCode %></textarea>
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1">Season Number</label>
-      <input type="number" name="seasonNumber" value="<%= season.seasonNumber %>" class="w-full p-2 rounded bg-gray-700 text-white" required min="1">
-    </div>
-    <button type="submit" class="bg-blue-500 p-2 rounded">Update Episode</button>
-  </form>
-</div>
+
+</body>
+</html>
 <%- include('partials/footer') %>

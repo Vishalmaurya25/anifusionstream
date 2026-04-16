@@ -1,55 +1,197 @@
 <%- include('partials/header') %>
-<div class="container mx-auto p-4 max-w-md">
-  <h1 class="text-2xl font-bold mb-4">User Register</h1>
-  <% if (messages.length > 0) { %>
-    <div class="bg-red-500 p-2 rounded mb-4"><%= messages %></div>
-  <% } %>
-  <form action="/user/register" method="POST">
-    <div class="mb-4">
-      <label class="block mb-1">Username</label>
-      <input type="text" name="username" class="w-full p-2 rounded bg-gray-700 text-white" required>
+
+<style>
+    :root {
+        --bg-deep: #0b0e11;
+        --card-navy: #151b23;
+        --input-dark: #1c232d;
+        --primary-blue: #3b82f6;
+        --text-muted: #9ca3af;
+    }
+
+    body { 
+        background-color: var(--bg-deep); 
+        color: #ffffff; 
+        font-family: 'Inter', sans-serif; 
+    }
+
+    /* Standardized Centering Wrapper */
+    .auth-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 85vh;
+        padding: 3rem 1.25rem;
+    }
+
+    .ui-card {
+        background-color: var(--card-navy);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 2.5rem;
+        width: 100%;
+        max-width: 480px;
+        padding: 3.5rem 2.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .ui-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.6rem;
+        display: block;
+    }
+
+    .ui-input {
+        background-color: var(--input-dark);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        color: #ffffff;
+        padding: 1.1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+
+    .ui-input:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 1px var(--primary-blue);
+        background-color: #232a33;
+    }
+
+    .ui-button {
+        background-color: var(--primary-blue);
+        color: #ffffff;
+        font-weight: 800;
+        padding: 1.1rem;
+        border-radius: 1rem;
+        width: 100%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: none;
+        margin-top: 1.5rem;
+        cursor: pointer;
+    }
+
+    .ui-button:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Password Toggle Integration */
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-btn {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        transition: color 0.2s;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .toggle-btn:hover { color: #fff; }
+
+    .footer-link {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .footer-link a {
+        color: var(--primary-blue);
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .footer-link a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="auth-wrapper">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-black tracking-tighter uppercase">
+            Join <span class="text-blue-500">AniFusion</span>
+        </h1>
+        <p class="text-gray-500 mt-2 font-medium">Create your elite anime account</p>
     </div>
-    <div class="mb-4">
-      <label class="block mb-1">Email</label>
-      <input type="email" name="email" class="w-full p-2 rounded bg-gray-700 text-white" required>
+
+    <div class="ui-card">
+        <% if (typeof messages !== 'undefined' && messages.length > 0) { %>
+            <div class="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl mb-8 text-xs font-bold text-center uppercase tracking-widest">
+                <%= messages %>
+            </div>
+        <% } %>
+
+        <form action="/user/register" method="POST">
+            <div class="mb-6">
+                <label class="ui-label">Username</label>
+                <input type="text" name="username" class="ui-input" placeholder="EliteWatcher" required>
+            </div>
+
+            <div class="mb-6">
+                <label class="ui-label">Email Address</label>
+                <input type="email" name="email" class="ui-input" placeholder="you@example.com" required>
+            </div>
+
+            <div class="mb-8">
+                <label class="ui-label">Password</label>
+                <div class="password-container">
+                    <input type="password" name="password" id="password" class="ui-input" placeholder="••••••••" required>
+                    <button type="button" id="toggle-password" class="toggle-btn">
+                        <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="ui-button">
+                Create Account
+            </button>
+
+            <div class="mt-10 text-center">
+                <p class="footer-link">
+                    Already part of the squad? <br class="md:hidden">
+                    <a href="/user/login" class="ml-1">Log in here</a>
+                </p>
+            </div>
+        </form>
     </div>
-    <div class="mb-4 relative">
-      <label class="block mb-1">Password</label>
-      <input type="password" name="password" id="password" class="w-full p-2 rounded bg-gray-700 text-white" required>
-      <button type="button" id="toggle-password" class="absolute right-2 top-10 text-gray-400 hover:text-gray-200">
-        <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-        </svg>
-      </button>
-    </div>
-    <button type="submit" class="bg-blue-500 p-2 rounded w-full">Register</button>
-       <a href="/user/login" class="block text-center mt-2 hover:underline">Already have an account? Login here</a>
-  </form>
 </div>
 
-
 <script>
-  const togglePassword = document.getElementById('toggle-password');
-  const passwordInput = document.getElementById('password');
-  const eyeIcon = document.getElementById('eye-icon');
+    const togglePassword = document.getElementById('toggle-password');
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eye-icon');
 
-  togglePassword.addEventListener('click', () => {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
+    togglePassword.addEventListener('click', () => {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
 
-    // Toggle eye icon (show/hide)
-    if (type === 'text') {
-      eyeIcon.innerHTML = `
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-      `;
-    } else {
-      eyeIcon.innerHTML = `
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-      `;
-    }
-  });
+        if (type === 'text') {
+            eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`;
+        } else {
+            eyeIcon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            `;
+        }
+    });
 </script>
 
 <%- include('partials/footer') %>

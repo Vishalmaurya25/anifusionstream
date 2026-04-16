@@ -1,322 +1,205 @@
 <%- include('partials/header') %>
 
-<div class="container mx-auto p-4">
-  <!-- Flash Messages -->
-  <% if (messages.error) { %>
-    <div class="bg-red-500 p-2 rounded mb-4 text-white">
-      <%= messages.error %>
-    </div>
-  <% } %>
-  <% if (messages.success) { %>
-    <div class="bg-green-500 p-2 rounded mb-4 text-white">
-      <%= messages.success %>
-    </div>
-  <% } %>
+<div class="container mx-auto px-4 md:px-8">
+    
+    <div class="mt-8 mb-6 flex justify-center relative">
+        <form action="/search" method="GET" id="search-form" class="w-full max-w-3xl">
+            <div class="glass-search flex items-center px-4 py-2 shadow-2xl transition-all">
+                
+                <input type="text" name="q" id="search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" 
+                    placeholder="Search anime..." 
+                    class="bg-transparent text-white text-sm w-full py-2 px-2 focus:outline-none" 
+                    autocomplete="off">
+                
+                <button type="submit" class="mx-2 p-2 rounded-full hover:bg-white/10 text-blue-400 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2.5"></path>
+                    </svg>
+                </button>
 
-  <!-- Search Form with Suggestions -->
-  <form action="/search" method="GET" id="search-form" class="mb-4 flex space-x-4 items-center relative">
-    <div class="relative w-1/2">
-      <input type="text" name="q" id="search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="Search anime..." class="p-2 rounded bg-gray-700 text-white w-full focus:outline-none transition duration-200" autocomplete="off">
-      <!-- Suggestions Dropdown -->
-      <div id="suggestions" class="absolute z-10 w-full bg-gray-800 rounded-lg mt-1 max-h-48 overflow-y-auto shadow-lg border border-gray-600 animate-suggestion-drop"></div>
-    </div>
-    <select name="genre" id="genre-select" class="p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <option value="">All Genres</option>
-      <% genres.forEach(genre => { %>
-        <option value="<%= genre._id %>" <%= selectedGenre === genre._id.toString() ? 'selected' : '' %>><%= genre.name %></option>
-      <% }) %>
-    </select>
-    <button type="submit" class="bg-blue-500 p-2 rounded text-white hover:bg-blue-600 transition duration-200">Search</button>
-    <% if (selectedGenre) { %>
-      <a href="/search?q=<%= encodeURIComponent(searchQuery) %>" class="bg-red-500 p-2 rounded text-white hover:bg-red-600 transition duration-200">X</a>
-    <% } %>
-  </form>
+                <div class="h-6 w-px bg-white/10 mx-2"></div>
 
-  <!-- Animation -->
-  <%- include('animation') %>
-
-  <!-- Latest Uploads Section -->
-  <div class="mt-8 mb-8">
-    <h2 class="text-2xl font-bold text-blue-400 mb-4">Latest Uploads</h2>
-    <div class="latest-uploads-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <% (latestEpisodes || []).slice(0, 25).forEach(function(episode, idx) { %>
-        <div class="latest-upload-card bg-black rounded-lg shadow-lg p-2 flex flex-col items-center transition-transform duration-200 hover:scale-105 hover:shadow-2xl border border-gray-700 hover:border-blue-500 group cursor-pointer">
-          <a href="/anime/<%= episode.anime ? episode.anime._id : '' %>" class="w-full flex flex-col items-center">
-            <img src="<%= episode.anime && episode.anime.imageUrl ? episode.anime.imageUrl : '/images/default.png' %>" alt="<%= episode.title %>" class="w-full h-28 object-cover rounded-md mb-2 border-2 border-transparent group-hover:border-blue-400 transition-all duration-200 latest-upload-img">
-            <div class="text-white font-semibold text-center truncate w-full group-hover:text-blue-300 transition-colors duration-200">
-              <%= episode.anime ? episode.anime.name : 'Unknown Anime' %>
+                <select name="genre" id="genre-select" class="bg-transparent text-gray-400 text-xs font-bold focus:outline-none cursor-pointer hover:text-white transition-colors">
+                    <option value="">Genres</option>
+                    <% genres.forEach(genre => { %>
+                        <option value="<%= genre._id %>" <%= typeof selectedGenre !== 'undefined' && selectedGenre === genre._id.toString() ? 'selected' : '' %>>
+                            <%= genre.name %>
+                        </option>
+                    <% }) %>
+                </select>
             </div>
-            <div class="text-gray-300 text-xs text-center truncate w-full group-hover:text-blue-200 transition-colors duration-200">
-              S<%= episode.seasonNumber %> • Ep <%= episode.episodeNumber %>: <%= episode.title %>
-            </div>
-          </a>
-          
-        </div>
-      <% }) %>
-    </div>
-  </div>
 
-  <!-- Display Search Results or Genre-based List -->
-  <% if (isSearchResult) { %>
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold text-red-500">Search Results</h2>
-      <a href="/" class="bg-red-500 p-2 rounded text-white hover:bg-red-600 transition duration-200">Clear Search</a>
+            <div id="suggestions" class="absolute z-[100] w-full max-w-lg left-1/2 -translate-x-1/2 bg-[#1c232d]/95 backdrop-blur-xl rounded-2xl mt-2 overflow-hidden shadow-2xl border border-white/10 hidden animate-suggestion-drop"></div>
+        </form>
     </div>
-    <% if (animes.length > 0) { %>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <% animes.forEach(anime => { %>
-          <div class="flex flex-col items-center">
-            <a href="/anime/<%= anime._id %>">
-              <img src="<%= anime.imageUrl %>" alt="<%= anime.name %>" class="w-40 h-56 object-cover rounded-lg">
-              <p class="text-center mt-2"><%= anime.name %></p>
-            </a>
-          </div>
-        <% }) %>
-      </div>
-    <% } else { %>
-      <p class="text-gray-300 mb-8">No anime found for your search.</p>
-    <% } %>
-  <% } else { %>
-    <!-- Default Genre-based List -->
-    <% genres.forEach(genre => { %>
-      <div class="mb-8">
-        <h2 class="text-2xl font-bold text-red-500"><%= genre.name %></h2>
-        <div class="relative">
-          <div class="anime-scroll flex space-x-6 overflow-x-auto py-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 px-2 md:px-4 lg:px-6">
-            <% animes.filter(anime => anime.genres.some(g => g._id.toString() === genre._id.toString())).forEach(anime => { %>
-              <div class="anime-card flex-shrink-0 flex flex-col items-center snap-center min-w-[160px] w-40 group bg-gray-800 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 p-2 md:w-44 lg:w-48 mx-1">
-                <a href="/anime/<%= anime._id %>" class="relative w-full">
-                  <img src="<%= anime.imageUrl %>" alt="<%= anime.name %>" class="w-full h-56 object-cover rounded-md transition-transform duration-200 group-hover:scale-105 shadow-md">
-                  <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-200 rounded-md"></div>
+
+    <% if (typeof isSearchResult !== 'undefined' && isSearchResult) { %>
+        <div class="mb-12 glass-panel p-6 rounded-3xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black text-white uppercase tracking-tighter">
+                    <span class="text-blue-500">Results:</span> <%= animes.length %> Found
+                </h2>
+                <a href="/" class="text-[10px] font-black bg-red-600/20 text-red-500 border border-red-500/30 px-4 py-2 rounded-full hover:bg-red-600 hover:text-white transition-all">
+                    CLEAR SEARCH X
                 </a>
-                <p class="text-center mt-2 text-white font-semibold group-hover:text-blue-300 transition-colors duration-200 truncate w-full text-base md:text-lg"><%= anime.name %></p>
-              </div>
-            <% }) %>
-          </div>
-          <!-- Gradient fade for scroll edges -->
-          <div class="pointer-events-none absolute top-0 left-0 h-full w-8 bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent z-10"></div>
-          <div class="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-gray-900 via-gray-900/80 to-transparent z-10"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <% animes.forEach(anime => { %>
+                    <div class="anime-card-glass rounded-2xl p-2 transition-all">
+                        <a href="/anime/<%= anime._id %>">
+                            <img src="<%= anime.imageUrl %>" alt="<%= anime.name %>" class="w-full h-48 md:h-64 object-cover rounded-xl shadow-lg">
+                            <p class="text-center mt-3 text-white font-bold text-xs md:text-sm truncate px-2"><%= anime.name %></p>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
         </div>
-      </div>
-    <% }) %>
-  <% } %>
+    <% } %>
+
+    <%- include('animation') %>
+
+    <section class="mt-12 mb-12">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-1.5 h-8 bg-blue-600 rounded-full"></div>
+            <h2 class="text-2xl font-black text-white tracking-tight">Latest Episodes</h2>
+        </div>
+
+        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
+            <% (latestEpisodes || []).slice(0, 13).forEach(function(episode) { %>
+                <div class="episode-glass-card group cursor-pointer p-1.5 md:p-2 rounded-xl border border-white/5 transition-all">
+                    <a href="/anime/<%= episode.anime ? episode.anime._id : '' %>" class="block">
+                        <div class="relative aspect-video overflow-hidden rounded-lg">
+                            <img src="<%= episode.anime && episode.anime.imageUrl ? episode.anime.imageUrl : '/images/default.png' %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute top-1 left-1 bg-black/80 backdrop-blur-md text-[8px] font-black text-white px-1.5 py-0.5 rounded border border-white/10 uppercase">
+                                S<%= episode.seasonNumber %> E<%= episode.episodeNumber %>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <h3 class="text-white text-[9px] md:text-xs font-bold truncate"><%= episode.anime ? episode.anime.name : 'Unknown' %></h3>
+                            <p class="text-gray-500 text-[8px] uppercase font-black tracking-tighter">ep <%= episode.episodeNumber %></p>
+                        </div>
+                    </a>
+                </div>
+            <% }) %>
+        </div>
+    </section>
+
+    <% if (typeof isSearchResult === 'undefined' || !isSearchResult) { %>
+        <% genres.forEach(genre => { 
+            const genreAnimes = animes.filter(anime => anime.genres.some(g => g._id.toString() === genre._id.toString()));
+            if(genreAnimes.length > 0) { %>
+            <div class="mb-12">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="text-blue-500 font-black text-xl">#</div>
+                        <h2 class="text-xl font-black text-white tracking-tight capitalize"><%= genre.name %></h2>
+                    </div>
+                    <a href="/search?genre=<%= genre._id %>" class="text-gray-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">View All →</a>
+                </div>
+
+                <div class="anime-scroll flex gap-5 overflow-x-auto pb-6 snap-x">
+                    <% genreAnimes.forEach(anime => { %>
+                        <div class="anime-card-glass flex-shrink-0 w-32 md:w-48 snap-center">
+                            <a href="/anime/<%= anime._id %>" class="group">
+                                <div class="relative rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
+                                    <img src="<%= anime.imageUrl %>" class="w-full h-44 md:h-64 object-cover group-hover:scale-105 transition-transform duration-700">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                </div>
+                                <p class="mt-3 text-white text-xs md:text-sm font-bold text-center truncate group-hover:text-blue-400"><%= anime.name %></p>
+                            </a>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        <% } }) %>
+    <% } %>
+
+    <div class="mt-20 mb-10 flex justify-center px-4">
+        <div class="w-full max-w-xl bg-gradient-to-br from-[#151b23] to-[#0b0e11] border border-white/5 rounded-[2.5rem] p-10 md:p-14 text-center shadow-2xl relative overflow-hidden group">
+            <h2 class="text-3xl font-black text-white mb-4">Need to reach <span class="text-blue-500">us?</span></h2>
+            <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8">
+                Send a message directly to the admin team and we'll get back to you as soon as possible.
+            </p>
+            <a href="/contact-us" class="inline-flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-black py-4 px-12 rounded-2xl transition-all shadow-xl shadow-blue-600/20 hover:-translate-y-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7 8.941L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                CONTACT ADMIN
+            </a>
+        </div>
+    </div>
 </div>
 
 <%- include('popular') %>
 <%- include('partials/footer') %>
 
-<!-- Pass animes data to client-side JavaScript -->
 <script type="application/json" id="animes-data">
-  <%- JSON.stringify(animes.map(anime => ({
-    name: String(anime.name).replace(/</g, '<').replace(/>/g, '>'),
-    id: anime._id
-  }))) %>
+    <%- JSON.stringify(animes.map(anime => ({ name: anime.name, id: anime._id }))) %>
 </script>
 
 <script>
-  const animes = JSON.parse(document.getElementById('animes-data').textContent);
-  const searchInput = document.getElementById('search-input');
-  const suggestionsDiv = document.getElementById('suggestions');
-  const genreSelect = document.getElementById('genre-select');
+    const animes = JSON.parse(document.getElementById('animes-data').textContent);
+    const searchInput = document.getElementById('search-input');
+    const suggestionsDiv = document.getElementById('suggestions');
+    const genreSelect = document.getElementById('genre-select');
 
-  // Show suggestions as user types (but don't submit the form)
-  searchInput.addEventListener('input', () => {
-    const query = searchInput.value.trim().toLowerCase();
-    suggestionsDiv.innerHTML = '';
-    suggestionsDiv.classList.add('hidden');
-
-    // Reset genre to "All Genres" when typing in search box
-    if (query.length > 0) {
-      genreSelect.value = '';
-    }
-
-    if (query.length === 0) return;
-
-    const filteredAnimes = animes.filter(anime => anime.name.toLowerCase().includes(query));
-    if (filteredAnimes.length === 0) return;
-
-    filteredAnimes.forEach(anime => {
-      const div = document.createElement('div');
-      div.className = 'p-2 hover:bg-gray-600 cursor-pointer text-white transition duration-150 ease-in-out hover:text-blue-300';
-      div.textContent = anime.name;
-      div.addEventListener('click', () => {
-        searchInput.value = anime.name;
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        suggestionsDiv.innerHTML = '';
         suggestionsDiv.classList.add('hidden');
-        // Do not submit the form here; wait for the Search button
-      });
-      suggestionsDiv.appendChild(div);
+        if (query.length === 0) return;
+        const filtered = animes.filter(a => a.name.toLowerCase().includes(query)).slice(0, 10);
+        if (filtered.length === 0) return;
+        filtered.forEach(a => {
+            const div = document.createElement('div');
+            div.className = 'p-3 hover:bg-white/10 cursor-pointer text-white text-sm font-medium transition-all';
+            div.textContent = a.name;
+            div.onclick = () => {
+                searchInput.value = a.name;
+                suggestionsDiv.classList.add('hidden');
+                document.getElementById('search-form').submit();
+            };
+            suggestionsDiv.appendChild(div);
+        });
+        suggestionsDiv.classList.remove('hidden');
     });
 
-    suggestionsDiv.classList.remove('hidden');
-  });
-
-  // Clear search box when genre is selected and submit the form
-  genreSelect.addEventListener('change', () => {
-    if (genreSelect.value) {
-      searchInput.value = ''; // Clear search box
-      suggestionsDiv.classList.add('hidden'); // Hide suggestions
-      document.getElementById('search-form').submit(); // Submit the form when a genre is selected
-    }
-  });
-
-  // Hide suggestions when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
-      suggestionsDiv.classList.add('hidden');
-    }
-  });
+    genreSelect.onchange = () => { if (genreSelect.value) { searchInput.value = ''; document.getElementById('search-form').submit(); } };
+    document.onclick = (e) => { if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) { suggestionsDiv.classList.add('hidden'); } };
 </script>
 
 <style>
-  /* Fade-in animation for suggestion dropdown */
-  @keyframes suggestionDrop {
-    0% { opacity: 0; transform: translateY(-10px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
+    body { background-color: #0b0e11; color: #fff; }
+    .glass-search { background: rgba(21, 27, 35, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 99px; }
+    .anime-card-glass { background: rgba(21, 27, 35, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    .episode-glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(4px); }
+    .anime-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    .anime-scroll::-webkit-scrollbar { display: none; }
+    @keyframes suggestionDrop { 0% { opacity: 0; transform: translate(-50%, -10px); } 100% { opacity: 1; transform: translate(-50%, 0); } }
+    .animate-suggestion-drop { animation: suggestionDrop 0.25s ease-out forwards; }
+   
+    /* ... your existing styles ... */
 
-  .animate-suggestion-drop {
-    animation: suggestionDrop 0.3s ease-out forwards;
-  }
-
-  /* Custom scrollbar styles */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: #4b5563 #1f2937;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #4b5563;
-    border-radius: 4px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: #1f2937;
-    border-radius: 4px;
-  }
-
-  /* Smooth scrolling behavior */
-  .snap-x {
-    scroll-snap-type: x mandatory;
-  }
-
-  .snap-center {
-    scroll-snap-align: center;
-  }
-
-  /* Ensure consistent spacing and alignment */
-  .min-w- {
-    min-width: 160px;
-  }
-
-  /* --- ENHANCED ANIME SCROLL & CARD STYLES --- */
-  .anime-scroll {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.5rem;
-  }
-  .anime-card {
-    transition: box-shadow 0.3s, transform 0.2s;
-    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);
-    border: 1px solid rgba(75,85,99,0.15);
-    background: linear-gradient(135deg, #23272f 80%, #1f2937 100%);
-  }
-  .anime-card:hover {
-    box-shadow: 0 6px 24px 0 rgba(59,130,246,0.25), 0 1.5px 6px 0 rgba(0,0,0,0.18);
-    transform: translateY(-4px) scale(1.04);
-    border-color: #3b82f6;
-  }
-  .anime-card img {
-    border-radius: 0.5rem;
-    border: 2px solid transparent;
-    background: #18181b;
-  }
-  .anime-card:hover img {
-    border-color: #3b82f6;
-  }
-  @media (max-width: 640px) {
-    .anime-card { min-width: 130px; width: 130px; padding: 0.5rem; }
-    .anime-card img { height: 160px; }
-    .anime-scroll { padding-left: 0.25rem; padding-right: 0.25rem; }
-  }
-  @media (min-width: 641px) and (max-width: 1023px) {
-    .anime-card { min-width: 150px; width: 150px; }
-    .anime-card img { height: 200px; }
-  }
-  @media (min-width: 1024px) {
-    .anime-card { min-width: 180px; width: 180px; }
-    .anime-card img { height: 240px; }
-  }
-  /* Hide scrollbar for all browsers */
-  .anime-scroll::-webkit-scrollbar { display: none; }
-  .anime-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-
-  .latest-uploads-grid {
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  .latest-upload-card {
-    background: transparent;
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.15);
-    border: 1px solid rgba(75,85,99,0.15);
-    transition: box-shadow 0.3s, transform 0.2s, border-color 0.2s;
-    cursor: pointer;
-    padding: 0.5rem;
-  }
-  .latest-upload-card:hover {
-    box-shadow: 0 6px 24px 0 rgba(59,130,246,0.25), 0 1.5px 6px 0 rgba(0,0,0,0.18);
-    transform: translateY(-4px) scale(1.04);
-    border-color: #3b82f6;
-  }
-  .latest-upload-img {
-    border-radius: 0.5rem;
-    border: 2px solid transparent;
-    background: #18181b;
-    width: 100%;
-    height: 112px;
-    object-fit: cover;
-    transition: border-color 0.2s;
-  }
-  .latest-upload-card:hover .latest-upload-img {
-    border-color: #3b82f6;
-  }
-  @media (max-width: 640px) {
-    .latest-uploads-grid {
-      grid-template-columns: repeat(3, 1fr) !important;
-      gap: 0.3rem !important;
+    /* THE FIX: Style the Dropdown and its Options */
+    #genre-select {
+        background-color: transparent;
+        color: #9ca3af; /* Muted gray text */
     }
-    .latest-upload-card {
-      padding: 0.15rem !important;
-      margin: 0 !important;
-      border-radius: 0.5rem;
+
+    /* Target the actual list that pops out */
+    #genre-select option {
+        background-color: #1c232d; /* Matches Search Suggestion background */
+        color: #ffffff;            /* White text */
+        padding: 10px;
     }
-    .latest-upload-img {
-      height: 60px !important;
-      min-height: 60px !important;
-      max-height: 60px !important;
-      border-radius: 0.3rem;
+
+    /* Remove the default blue highlight in some browsers and use your theme */
+    #genre-select:focus {
+        outline: none;
     }
-    .latest-upload-card .text-white,
-    .latest-upload-card .text-gray-300,
-    .latest-upload-card .text-gray-400 {
-      font-size: 0.7rem !important;
-      line-height: 1.1;
+
+    /* Optional: Style the select hover state */
+    #genre-select:hover {
+        color: #ffffff;
     }
-    .latest-uploads-grid > .latest-upload-card:nth-child(n+10) {
-      display: none !important;
-    }
-  }
-  @media (min-width: 641px) {
-    .latest-uploads-grid {
-      grid-template-columns: repeat(5, 1fr) !important;
-      gap: 1rem !important;
-    }
-    .latest-uploads-grid > .latest-upload-card:nth-child(n+26) {
-      display: none !important;
-    }
-  }
+
 </style>
