@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 const Anime = require('../models/Anime');
@@ -191,11 +192,13 @@ router.get('/add-anime', ensureAuthenticatedAdmin, async (req, res) => {
 
 router.post('/add-anime', ensureAuthenticatedAdmin, async (req, res) => {
     try {
-        const { name, imageUrl, description, genres } = req.body;
+        // ADDED: specialInfo is now captured from req.body
+        const { name, imageUrl, description, genres, specialInfo } = req.body; 
         const anime = new Anime({
             name,
             imageUrl,
             description,
+            specialInfo: specialInfo || '', // SAVING TO DB
             genres: Array.isArray(genres) ? genres : (genres ? [genres] : [])
         });
         await anime.save();
@@ -206,14 +209,18 @@ router.post('/add-anime', ensureAuthenticatedAdmin, async (req, res) => {
     }
 });
 
+// --- GET EDIT PAGE ---
 router.get('/edit-anime/:id', ensureAuthenticatedAdmin, async (req, res) => {
     try {
+        // Fetching with .lean() automatically includes specialInfo if it exists in DB
         const anime = await Anime.findById(req.params.id).populate('genres').lean();
         const genres = await Genre.find().lean();
+        
         if (!anime) {
             req.flash('error', 'Anime not found');
             return res.redirect('/admin/dashboard');
         }
+
         res.render('admin-edit-anime', { 
             anime, 
             genres, 
@@ -225,18 +232,25 @@ router.get('/edit-anime/:id', ensureAuthenticatedAdmin, async (req, res) => {
     }
 });
 
+// --- POST UPDATE DATA ---
 router.post('/edit-anime/:id', ensureAuthenticatedAdmin, async (req, res) => {
     try {
-        const { name, imageUrl, description, genres } = req.body;
+        // 1. Capture 'specialInfo' from the form body
+        const { name, imageUrl, description, genres, specialInfo } = req.body;
+
+        // 2. Pass it into the update object
         await Anime.findByIdAndUpdate(req.params.id, {
             name,
             imageUrl,
             description,
+            specialInfo: specialInfo || '', // Ensures it updates the field in DB
             genres: Array.isArray(genres) ? genres : (genres ? [genres] : [])
         });
+
         req.flash('success', 'Anime metadata updated!');
         res.redirect('/admin/dashboard');
     } catch (err) {
+        console.error("Update Error:", err);
         req.flash('error', 'Update failed');
         res.redirect(`/admin/edit-anime/${req.params.id}`);
     }

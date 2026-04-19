@@ -110,7 +110,149 @@
     .player-shadow {
         box-shadow: 0 0 80px -20px rgba(59, 130, 246, 0.2);
     }
+   /* --- MODERN CINEMATIC INFO BOX --- */
+.admin-info-banner {
+    position: relative;
+    background: rgba(15, 23, 42, 0.6); /* Deep navy glass */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-left: 4px solid var(--accent-blue); /* Strong accent line */
+    border-radius: 1.25rem;
+    padding: 1.75rem 2rem;
+    margin-top: 3rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.5);
+}
 
+/* Background Glow Effect */
+.admin-info-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Floating Badge */
+.info-badge {
+    background: var(--accent-blue);
+    color: white;
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.admin-info-banner h3 {
+    color: #ffffff;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 1.1rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-info-banner h3 i {
+    color: var(--accent-blue);
+    filter: drop-shadow(0 0 5px var(--accent-blue));
+}
+
+.admin-info-banner p {
+    color: #9ca3af; /* Muted gray for elegance */
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 80%;
+}
+
+/* --- PREMIUM SUPPORT & SHARE BOX --- */
+.support-share-card {
+    background: linear-gradient(135deg, rgba(21, 27, 35, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.5rem;
+    padding: 2.5rem 1.5rem;
+    margin-top: 2rem;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+.support-share-card h2 {
+    color: var(--accent-yellow);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.support-share-card p {
+    color: #d1d5db;
+    font-size: 0.95rem;
+    max-width: 500px;
+    margin: 0 auto 2rem auto;
+    line-height: 1.6;
+}
+
+/* Social Icon Grid */
+.share-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.share-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.2rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.share-btn:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Brand Colors on Hover */
+.btn-fb:hover { background: #1877F2; border-color: #1877F2; }
+.btn-wa:hover { background: #25D366; border-color: #25D366; }
+.btn-x:hover { background: #000000; border-color: #ffffff; }
+.btn-tg:hover { background: #0088cc; border-color: #0088cc; }
+.btn-copy:hover { background: var(--accent-blue); border-color: var(--accent-blue); }
+
+/* Animation for attention */
+.pulse-glow {
+    animation: pulseGlow 3s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { border-color: rgba(59, 130, 246, 0.2); }
+    50% { border-color: rgba(59, 130, 246, 0.5); }
+}
     /* Custom scrollbar */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-deep); }
@@ -197,7 +339,59 @@
                 <% }) %>
             </div>
         <% }) %>
+
+        <% if (anime.specialInfo && anime.specialInfo.trim() !== '') { %>
+        <div class="admin-info-banner animate-pulse-subtle">
+            <h3><i class="fas fa-bullhorn mr-2"></i> Anime Updates </h3>
+            <p><%= anime.specialInfo %></p>
+        </div>
+    <% } %>
     </div>
+
+<div class="support-share-card">
+    <h2>Thanks for Watching!</h2>
+    <p>We hope you enjoyed the episode. Please support our community by sharing <strong><%= anime.name %></strong> with your friends and family!</p>
+
+    <% 
+        // Dynamic URL construction
+        const animeUrl = `https://anifusionstream.com/anime/${anime._id}`; 
+        const shareText = `Check out ${anime.name} on AniFusionStream!`;
+    %>
+
+    <div class="share-grid">
+        <a href="https://api.whatsapp.com/send?text=<%= encodeURIComponent(shareText + ' ' + animeUrl) %>" 
+           target="_blank" class="share-btn btn-wa" title="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+
+        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(animeUrl) %>" 
+           target="_blank" class="share-btn btn-fb" title="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+
+        <a href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(shareText) %>&url=<%= encodeURIComponent(animeUrl) %>" 
+           target="_blank" class="share-btn btn-x" title="Share on X">
+            <i class="fab fa-x-twitter"></i>
+        </a>
+
+        <a href="https://t.me/share/url?url=<%= encodeURIComponent(animeUrl) %>&text=<%= encodeURIComponent(shareText) %>" 
+           target="_blank" class="share-btn btn-tg" title="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+        </a>
+
+        <button onclick="copyAnimeLink('<%= animeUrl %>')" class="share-btn btn-copy" title="Copy Link to Clipboard">
+            <i class="fas fa-link"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+function copyAnimeLink(url) {
+    navigator.clipboard.writeText(url).then(() => {
+        alert("Anime link copied! You can now share it on Discord or Instagram.");
+    });
+}
+</script>
 
     <div class="mt-20 glass-card p-6 md:p-10">
         <h2 class="text-3xl font-black uppercase tracking-tighter mb-8">Community <span class="text-blue-500">Voice</span></h2>
@@ -238,7 +432,7 @@
             <% } %>
 
             <% if (comments && comments.length > 0) { renderComments(comments); } else { %>
-                <p class="text-center py-10 text-gray-600 font-bold uppercase tracking-widest text-xs">No transmissions yet. Start the conversation.</p>
+                <p class="text-center py-10 text-gray-600 font-bold uppercase tracking-widest text-xs">No Conversation yet. Start the conversation.</p>
             <% } %>
         </div>
     </div>
